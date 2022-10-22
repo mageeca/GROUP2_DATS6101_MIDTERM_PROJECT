@@ -1,0 +1,7 @@
+Dataset - https://gssdataexplorer.norc.org/home
+
+Research for the goal - 
+
+https://www.analyticsvidhya.com/blog/2015/12/complete-tutorial-time-series-modeling/
+https://towardsdatascience.com/animated-time-series-plots-in-r-3777fa738456
+https://statisticsglobe.com/draw-stacked-bars-within-grouped-barplot-r
