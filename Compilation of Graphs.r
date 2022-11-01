@@ -59,34 +59,11 @@ ggplot(gss1_hsjcsf, aes(x = year, fill = happy)) +
   geom_density(alpha=.7, fill="#FF6666") 
 
 
-ggplot(filter(gss_whole, class_=="Middle class"),
-       aes(x = satfin,
-           y = total_count,
-           fill = happy)) + 
-  geom_bar(stat = "identity",
-           position = "fill") +
-  facet_grid(~ year)
-
-ggplot(gss_2021_group_b,
-       aes(x = satfin,
-           y = total_count,
-           fill = happy)) + 
-  geom_bar(stat = "identity",
-           position = "fill") +
-  facet_grid(~ class_)
-
-ggplot(filter(gss_72to84, class_=="Middle class"),
-       aes(x = satfin,
-           y = total_count,
-           fill = happy)) + 
-  geom_bar(stat = "identity",
-           position = "fill") +
-  facet_grid(~ year)
 
 #HAPPINESS TSA
 
 gss_happy <- gss1_hsjcsf %>% 
-  group_by(year,   ) %>% 
+  group_by(year, happy) %>% 
   summarise(total_count=n(),
             .groups = 'drop') %>% 
   as.data.frame()
@@ -98,11 +75,24 @@ gss_happy_perc1 <- transform(gss_happy,
 
 gss_happy_perc1$perc = gss_happy_perc1$perc * 100
 
+#plot
+
 ggplotly(gss_happy_perc1 %>%
            ggplot( aes(x=year, y=perc)) +
            geom_line(aes(colour=happy)) +
            geom_point()+
            ylab("Percentage Happy Satisfaction "))
+
+gif1<-gss_happy_perc1 %>%
+           ggplot( aes(x=year, y=perc)) +
+           geom_line(aes(colour=happy)) +
+           geom_point()+
+           ylab("Percentage Happy Satisfaction ")+
+           transition_reveal(year)  
+
+
+animate(gif1, renderer = gifski_renderer(), fps = 60, height = 400, width =400)
+anim_save("gif1.gif")
 
 
 
@@ -120,11 +110,24 @@ gss_satfin_perc1 <- transform(gss_satfin,
 
 gss_satfin_perc1$perc = gss_satfin_perc1$perc * 100
 
+#plot
+
 ggplotly(gss_satfin_perc1 %>%
            ggplot( aes(x=year, y=perc)) +
            geom_line(aes(colour=satfin)) +
            geom_point()+
            ylab("Percentage Financial Satisfaction "))
+
+gif2 <- gss_satfin_perc1 %>%
+           ggplot( aes(x=year, y=perc)) +
+           geom_line(aes(colour=satfin)) +
+           geom_point()+
+           ylab("Percentage Financial Satisfaction ")+
+           transition_reveal(year)
+
+animate(gif2, renderer = gifski_renderer(), fps = 60, height = 400, width =400)
+anim_save("gif2.gif")
+  
 
 
 #SATJOB INTERACTIVE TSA
@@ -142,11 +145,23 @@ gss_satjob_perc1 <- transform(gss_satjob,
 
 gss_satjob_perc1$perc = gss_satjob_perc1$perc * 100
 
-ggplotly(gss_satjob_perc1 %>%
+#plot
+
+ggplotly(gss_satfin_perc1 %>%
+           ggplot( aes(x=year, y=perc)) +
+           geom_line(aes(colour=satfin)) +
+           geom_point()+
+           ylab("Percentage Financial Satisfaction "))
+
+gif3<-gss_satjob_perc1 %>%
            ggplot( aes(x=year, y=perc)) +
            geom_line(aes(colour=satjob)) +
            geom_point()+
-           ylab("Percentage Job Satisfaction"))
+           ylab("Percentage Job Satisfaction")+
+           transition_reveal(year)
+
+animate(gif3, renderer = gifski_renderer(), fps = 60, height = 400, width =400)
+anim_save("gif3.gif")
 
 
 
