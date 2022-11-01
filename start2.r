@@ -515,3 +515,51 @@ gss_satjob_perc1 %>%
   geom_line(aes(colour=satjob)) +
   geom_point()
 
+
+library(plotly)
+library(ggeasy)
+library(ggpubr)
+library(gganimate)
+library(gifski)
+library(transformr)
+library(scales)
+
+
+gif1 <- gss_satjob_perc1 %>%
+  ggplot( aes(x=year, y=perc)) +
+  geom_line(aes(colour=satjob)) +
+  geom_point() +
+  transition_reveal(year)
+
+animate(gif1, renderer = gifski_renderer())
+anim_save("gif1.gif")
+
+# Over the year animation
+
+gss_whole_perc1 <- transform(gss_whole,
+                              perc = ave(total_count,
+                                         year,
+                                         FUN = prop.table))
+
+gss_whole_perc1$perc = gss_whole_perc1$perc * 100
+
+library(googlesheets4)
+library(tidyverse)
+library(gganimate)
+library(gifski)
+
+
+hap_satjob_static <- ggplot(filter(gss_whole, class_=="Middle class"),
+                            aes(x = satfin,
+                                y = total_count,
+                                fill = happy)) + 
+  geom_bar(stat = "identity",
+           position = "fill")
+
+anim <- hap_satjob_static + 
+  transition_states(year, transition_length = 4, state_length = 1) +
+  view_follow(fixed_x = TRUE)+
+  labs(title = 'Middle Class: {closest_state}')
+
+animate(anim, 200, fps = 10,  width = 1200, height = 1000, 
+        renderer = gifski_renderer("gganim.gif"))
