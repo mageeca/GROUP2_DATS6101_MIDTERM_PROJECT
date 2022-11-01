@@ -91,7 +91,7 @@ gss_happy <- gss1_hsjcsf %>%
             .groups = 'drop') %>% 
   as.data.frame()
 
-gss_happy_perc1 <- transform(gss_happy,                             # Calculate percentage by group
+gss_happy_perc1 <- transform(gss_happy,
                              perc = ave(total_count,
                                         year,
                                         FUN = prop.table))
