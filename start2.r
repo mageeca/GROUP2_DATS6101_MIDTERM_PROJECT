@@ -435,7 +435,6 @@ gss_2021_group_b <- gss_2021 %>% group_by(class_, satfin, happy) %>%
   as.data.frame()
 
 
-
 ggplot(filter(gss_whole, class_=="Middle class"),
        aes(x = satfin,
            y = total_count,
@@ -460,4 +459,59 @@ ggplot(filter(gss_72to84, class_=="Middle class"),
            position = "fill") +
   facet_grid(~ year)
 
+
+
+gss_happy <- gss1_hsjcsf %>% 
+  group_by(year, happy) %>% 
+  summarise(total_count=n(),
+            .groups = 'drop') %>% 
+  as.data.frame()
+
+gss_happy_perc1 <- transform(gss_happy,                             # Calculate percentage by group
+                       perc = ave(total_count,
+                                  year,
+                                  FUN = prop.table))
+
+gss_happy_perc1$perc = gss_happy_perc1$perc * 100
+
+gss_happy_perc1 %>%
+  ggplot( aes(x=year, y=perc)) +
+  geom_line(aes(colour=happy)) +
+  geom_point()
+
+gss_satfin <- gss1_hsjcsf %>% 
+  group_by(year, satfin) %>% 
+  summarise(total_count=n(),
+            .groups = 'drop') %>% 
+  as.data.frame()
+
+gss_satfin_perc1 <- transform(gss_satfin,
+                             perc = ave(total_count,
+                                        year,
+                                        FUN = prop.table))
+
+gss_satfin_perc1$perc = gss_satfin_perc1$perc * 100
+
+gss_satfin_perc1 %>%
+  ggplot( aes(x=year, y=perc)) +
+  geom_line(aes(colour=satfin)) +
+  geom_point()
+
+gss_satjob <- gss1_hsjcsf %>% 
+  group_by(year, satjob) %>% 
+  summarise(total_count=n(),
+            .groups = 'drop') %>% 
+  as.data.frame()
+
+gss_satjob_perc1 <- transform(gss_satjob,
+                              perc = ave(total_count,
+                                         year,
+                                         FUN = prop.table))
+
+gss_satjob_perc1$perc = gss_satjob_perc1$perc * 100
+
+gss_satjob_perc1 %>%
+  ggplot( aes(x=year, y=perc)) +
+  geom_line(aes(colour=satjob)) +
+  geom_point()
 
