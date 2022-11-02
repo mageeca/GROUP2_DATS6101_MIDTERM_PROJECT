@@ -160,7 +160,7 @@ gif3<-gss_satjob_perc1 %>%
            ylab("Percentage Job Satisfaction")+
            transition_reveal(year)
 
-animate(gif3, renderer = gifski_renderer(), fps = 60, height = 400, width =400)
+animate(gif3, renderer = gifski_renderer(), fps = 60, height = 400, width =800)
 anim_save("gif3.gif")
 
 
