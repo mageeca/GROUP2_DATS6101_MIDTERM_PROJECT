@@ -1,0 +1,77 @@
+---
+title: "The Relationship between Financial and Job Satisfaction and Levels of Happiness Among Different Social Classes "
+author: "Carrie Magee, Abhimanyu Barun, Ambar Pathak, and Kismat Khatri"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#uploading packages
+library(ezids)
+library(dplyr)
+library(ggplot2)
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+gss1 <- data.frame(read.csv("/Users/carriemagee/Desktop/GROUP2_DATS6101_MIDTERM_PROJECT/GSS.csv"))
+#cleaning data
+gss1_h = subset(gss1, happy == "Very happy" | happy == "Pretty happy" | happy == "Not too happy")
+gss1_hsj = subset(gss1_h, satjob == "Very satisfied" | satjob == "Moderately satisfied" | satjob == "A little dissatisfied" | satjob == "Very dissatisfied")
+gss1_hsjc = subset(gss1_hsj, class_ == "Lower class" | class_ == "Working class" | class_ == "Middle class" | class_ == "Upper class")
+gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "More or less satisfied" | satfin == "Not satisfied at all")
+```
+
+
+## Introduction
+
+  There is still contention over whether money and success are the key to real happiness. Americans are often forced to sacrifice their happiness due to a culture that puts immense focus on establishing a successful career and working towards financial freedom. Furthermore, studies have shown the potential effects social class has on individual’s thoughts, feelings, and behaviors (Manstead, 2018). In relation, individuals of different social classes may have varying life experiences that can influence their financial and job satisfaction as well as their general happiness. 
+  
+  With the use of data from the General Social Survey, our report focuses on the general happiness of a individual in relation to their work satisfaction and financial satisfaction from 1980 to 2018. In order to measure job satisfaction, we used the statement *On the whole, how satisfied are you with the work you do..?* with responses ranging from *very satisfied, moderately satisfied, a little dissatisfied, or very dissatisfied*. Similarly, financial satisfaction was measured using the question *So far as you and your family are concerned, would you say that you are pretty well satisfied with your present financial situation, more or less satisfied, or not satisfied at all?* Our third variable "general happiness" was measured by asking *Taken all together, how would you say things are these days--would you say that you are very happy, pretty happy, or not too happy?*
+  
+  More specifically, we hoped to uncover any potential relationships between an individual's social class and their job satisfaction,financial satisfaction, and general happiness. Social class was measured by asking *If you were asked to use one of four names for your social class, which would you say you belong in?* with four responses including *the lower class, the working class, the middle class, or the upper class*. 
+  
+
+## General Social Survey dataset
+
+### Summary of dataset
+```{r}
+
+```
+
+INSERT COMMENTARY HERE
+
+
+### Descriptive Statistics (frequency distribution and mode)
+```{r}
+
+```
+
+INSERT COMMENTARY HERE
+
+### Graph 1
+```{r fig.height = 8, fig.width = 13}
+# making plot of relationship between class and job satisfaction
+ggplot(gss1_hsjcsf, aes(x=satjob, fill=happy)) +
+  geom_bar(position = "dodge")+
+  facet_wrap(~class_)  +
+  labs(title="Relationship Between Job Satisfaction and Happiness Levels by Social Class",x="Job Satisfaction", y = "Frequency",fill="Level of Happiness")+
+  theme_bw()+theme(plot.title = element_text(face="bold",hjust = 0.5))+
+  scale_fill_brewer(palette = "Set2")+scale_x_discrete(limits = c("Very dissatisfied","A little dissatisfied", " Moderately satisfied","Very satisfied"))
+```
+
+
+### Graph 2
+```{r fig.height = 8, fig.width = 13}
+# making plot of relationship between class and financial satisfaction
+ggplot(gss1_hsjcsf, aes(x=satfin, fill=happy)) +
+  geom_bar(position = "dodge")+
+  facet_wrap(~class_)  +
+  labs(title="Relationship Between Financial Satisfaction and Happiness Levels by Social Class",x="Financial Satisfaction", y = "Frequency",fill="Level of Happiness")+
+  theme_bw()+theme(plot.title = element_text(face="bold",hjust = 0.5))+
+  scale_fill_brewer(palette = "Set2")+scale_x_discrete(limits = c("  Not satisfied at all","More or less satisfied","Pretty well satisfied"),guide = guide_axis(n.dodge=2))
+```
+INSERT COMMENTARY
+
+### Chi Squared Analysis
+```{r}
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$satfin, var.col = gss1_hsjcsf$class_, title = "Table Title", show.row.prc = TRUE)
+```
+
