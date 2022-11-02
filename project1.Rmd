@@ -532,6 +532,8 @@ Working_class_each_year3
 plot(unique(gss1$year), Working_class_each_year3,type = 'l', xlab = 'Year', ylab = "Lowerclass percentage", 
      ylim = c(0,0.5))
 lines(unique(gss1$year), Working_class_each_year2,type = 'l',col = 'red')
+lines(unique(gss1$year), Working_class_each_year,type = 'l',col = 'yellow')
+
 
 
 Happy_each_year = numeric()
@@ -545,6 +547,43 @@ plot(unique(gss1_hsjcsf$year),  Happy_each_year,type = 'l', xlab = 'Year', ylab 
 
 ```
 
+
+```{r}
+gss_satjob <- gss1_hsjcsf %>% 
+  group_by(year, satjob) %>% 
+  summarise(total_count=n(),
+            .groups = 'drop') %>% 
+  as.data.frame()
+
+gss_satjob_perc1 <- transform(gss_satjob,
+                              perc = ave(total_count,
+                                         year,
+                                         FUN = prop.table))
+
+gss_satjob_perc1$perc = gss_satjob_perc1$perc * 100
+
+
+ gss_satjob_perc1 %>%
+  ggplot( aes(x=year, y=perc)) +
+    geom_line(aes(colour=satjob)) +
+    ggtitle("Line chart for Job Satisfication") 
+   
+    
+
+gss_satjob_perc1 %>%
+  ggplot( aes(x=year, y=perc)) +
+    geom_line(aes(colour=satjob)) +
+    geom_point(color="#69b3a2", size=2) +
+    ggtitle("Connected scatterplot for Job Satisfication") 
+   
+   
+```
+```{r}
+ggplot(gss1_hsjcsf,
+       aes(x = year, fill = happy))+
+  geom_density()
+
+```
 ## Including Plots
 
 You can also embed plots, for example:
