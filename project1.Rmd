@@ -581,7 +581,7 @@ gss_satjob_perc1 %>%
 ```{r}
 ggplot(gss1_hsjcsf,
        aes(x = year, fill = happy))+
-  geom_density()
+  geom_density(alpha = 0.3)
 
 ```
 ## Including Plots
