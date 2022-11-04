@@ -578,10 +578,63 @@ gss_satjob_perc1 %>%
    
    
 ```
+
+
 ```{r}
 ggplot(gss1_hsjcsf,
        aes(x = year, fill = happy))+
   geom_density(alpha = 0.3)
+
+```
+
+
+```{r}
+pie_happy <- gss1_hsjcsf %>% count(happy) %>%
+  arrange(desc(happy)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_happy)+
+  geom_col(mapping = aes(x="", y=percentages, fill=happy)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+```
+
+```{r}
+pie_class <- gss1_hsjcsf %>% count(class_) %>%
+  arrange(desc(class_)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_class)+
+  geom_col(mapping = aes(x="", y=percentages, fill=class_)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+```
+
+```{r}
+pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
+  arrange(desc(satfin)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_satfin)+
+  geom_col(mapping = aes(x="", y=percentages, fill=satfin)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+```
+
+
+```{r}
+pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
+  arrange(desc(satjob)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_satjob)+
+  geom_col(mapping = aes(x="", y=percentages, fill=satjob)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
 
 ```
 ## Including Plots
