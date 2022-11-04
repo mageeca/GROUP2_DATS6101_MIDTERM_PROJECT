@@ -9,13 +9,6 @@ output: html_document
 library(ezids)
 library(dplyr)
 library(ggplot2)
-library(plotly)
-library(ggeasy)
-library(ggpubr)
-library(gganimate)
-library(gifski)
-library(transformr)
-library(scales)
 
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 gss1 <- data.frame(read.csv("/Users/carriemagee/Desktop/GROUP2_DATS6101_MIDTERM_PROJECT/GSS.csv"))
@@ -45,6 +38,19 @@ gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "M
 
 INSERT COMMENTARY HERE
 
+### Chi Squared Analysis
+```{r}
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col =gss1_hsjcsf$satfin, title = "Level of Happiness by Financial Satisfaction Crosstabulation",var.labels = c("Happiness Level","Financial Satisfaction"), show.row.prc = TRUE,emph.total = TRUE)
+```
+
+The cross tabulation above shows the frequency of happiness levels by financial satisfaction. We wanted to further examine the relationship between financial satisfaction and happiness in order to see how feelings of financial satisfaction can potentially influence how happy an individual feels in life.  According to the chi-squared test of independence, there is a significant relationship between happiness and financial satisfaction (p<0.05). This means that an individual's level of happiness depends on their feelings of satisfaction with their current financial situation. More specifically, the table shows that a majority of individuals (54.5%) that report being not at all satisfied with their financial situation were not too happy in life. In addition, almost 49% of people that reported being more or less satisfied with their financial situation were pretty happy with their life while about 42% of individuals that were pretty well satisfied with their financial situation reported being very happy in life. The results clearly imply that the more financially satisfied an individual is, the happier they are in life. 
+
+```{r fig.height = 8, fig.width = 13}
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col = gss1_hsjcsf$satjob,title = "Level of Happiness by Job Satisfaction Crosstabulation",var.labels = c("Happiness Level","Job Satisfaction"), show.row.prc = TRUE,emph.total = TRUE)
+```
+
+The cross tabulation above shows the frequency of happiness levels by job satisfaction. We wanted to further examine the relationship between job satisfaction and happiness in order to see how job satisfaction can potentially influence how happy an individual feels in life. According to the chi-squared test of independence, there is a significant relationship between job satisfaction and happiness (p<0.05). This means that an individual's level of happiness depends on their satisfaction with their current job. The table shows that individuals that a majority of individuals that reported being very dissatisfied (12.2%) or a little dissatisfied (19.8%) with their jobs were not too happy in their lives. About 44% of people that were moderately satisfied with their jobs reported being pretty happy in life while 65.9% of people who were very satisfied with their jobs reported being very happy in life. Considering that individuals who reported being more dissatisfied with job also reported being unhappy and those who reported being more satisfied were more happy shows  that job satisfaction may play a crucial role in how happy individuals are in life. 
+
 ### Graph 1
 ```{r fig.height = 8, fig.width = 13}
 # making plot of relationship between class and job satisfaction
@@ -56,7 +62,7 @@ ggplot(gss1_hsjcsf, aes(x=satjob, fill=happy)) +
   scale_fill_brewer(palette = "Set2")+scale_x_discrete(limits = c("Very dissatisfied","A little dissatisfied", "Moderately satisfied","Very satisfied"))
 ```
 
-The figure above looks at the relationship between individuals' job satisfaction and general happiness by social class. For context, there is a larger number of working and middle class individuals than upper and lower class individuals. The results show that many lower class individuals were very satisfied with their job and that those same individuals were pretty happy overall. A majority of working class individuals were also very satisfied with their job and were also pretty happy. Interestingly, many middle class individuals were very satisfied with their jobs but were also equally pretty happy and very happy. The upper class individuals were the only group that had more very happy individuals with high job satisfaction. In other words, most individuals within the four social class groups were very satisfied with their jobs but only upper class individuals had more very happy individuals compared to pretty happy individuals.  
+The figure above looks at the relationship between individuals' job satisfaction and general happiness by social class. For context, there is a larger number of working and middle class individuals than upper and lower class individuals. The results show that many lower class individuals were very satisfied with their job and that those same individuals were pretty happy overall. A majority of working class individuals were also very satisfied with their job and were also pretty happy. Interestingly, many middle class individuals were very satisfied with their jobs but reported being equally pretty happy and very happy in their lives. The upper class individuals were the only group that had more very happy individuals with very high job satisfaction. In other words, most individuals within the four social class groups were very satisfied with their jobs but only upper class individuals had more very happy individuals compared to pretty happy individuals. These results provide some insight into how social class may have a greater influence on individual's feelings of financial satisfaction and thus also influencing their feelings of happiness in life.  
 
 ### Graph 2
 ```{r fig.height = 7, fig.width = 12}
@@ -69,116 +75,14 @@ ggplot(gss1_hsjcsf, aes(x=satfin, fill=happy)) +
   scale_fill_brewer(palette = "Set2")+scale_x_discrete(limits = c("  Not satisfied at all","More or less satisfied","Pretty well satisfied"),guide = guide_axis(n.dodge=2))
 ```
 
-This figure illustrates the relationship between individuals' financial satisfaction and general happiness by social class. There is also a disproportionate number of individuals in the middle and working class groups in comparison to the lower and upper class individuals. For lower, working, and middle class groups, a majority of individuals were more or less satisfied with their financial situation and reported feeling pretty happy in their life. It is important to note that there is a similar trend in the middle class group for both job satisfaction and financial satisfaction in relation to happiness. Individuals that are highly satisfied with their job or financial situation were equally high in both pretty happiness and very happiness.For upper class individuals, a large number were pretty well satisfied with their financial situation and reported being very happy in life. 
+This figure illustrates the relationship between individuals' financial satisfaction and general happiness by social class. There is also a disproportionate number of individuals in the middle and working class groups in comparison to the lower and upper class individuals. For lower, working, and middle class groups, a majority of individuals were more or less satisfied with their financial situation and reported feeling pretty happy in their life. It is important to note that there is a similar trend in the middle class group for both job satisfaction and financial satisfaction in relation to happiness. Middle class individuals that are highly satisfied with their job or financial situation were equally high in both the pretty happy and very happy responses.For upper class individuals, a large number were pretty well satisfied with their financial situation and reported being very happy in life. As we can see, the results show that the higher the social class the more you become satisfied with your financial situation and the more you report being very happy while the more you go down in class, the more your satisfaction and happiness become average (as in more or less satisfied and pretty happy).
 
-
-### Chi Squared Analysis
-```{r}
-sjPlot::tab_xtab(var.row = gss1_hsjcsf$satfin, var.col =gss1_hsjcsf$class_, title = "Financial Satisfaction by Social Class Crosstabulation",var.labels = c("Financial Satisfaction","Social Class"), show.row.prc = TRUE,emph.total = TRUE)
-```
-
-The cross tabulation above shows the frequency of financial satisfaction levels by social class. According to the chi-squared test of independence, there is a significant relationship between financial satisfaction and social class (p<0.05). This means that an individual's level of satisfaction with their financial situation depends on their social class. More specifically, the table shows that a majority of lower class individuals (12.5%) were not at all satisfied with their financial situations. Similarly, almost 70% of working class individuals were not satisfied at all with their financial situation. In contrast, a majority of middle class (59.3%) and upper class (6.8%) individuals were pretty well satisfied with their financial situation. Overall, the results show a large difference in satisfaction with financial situations across social classes.
-
-```{r fig.height = 8, fig.width = 13}
-sjPlot::tab_xtab(var.row = gss1_hsjcsf$satjob, var.col = gss1_hsjcsf$class_,title = "Job Satisfaction by Social Class Crosstabulation",var.labels = c("Job Satisfaction ","Social Class"), show.row.prc = TRUE,emph.total = TRUE)
-```
-
-The cross tabulation above shows the frequency of job satisfaction levels by social class.According to the chi-squared test of independence, there is a significant relationship between financial satisfaction and social class (p<0.05). This means that an individual's level of satisfaction with their job depends on their social class. The results show that most lower class individuals (14.9%) are very dissatisfied with their jobs while 53.7% of working class individuals are a little dissatisfied with their job. In contrast, a majority of middle class (47.4%) and upper class (4%) individuals are very satisfied with their jobs. Nonetheless, the results reveal a divide between lower and working class individuals and middle and upper class individuals in relation to their overall job satisfaction. 
 
 
 ### Time-Series Analysis
-
-  We created one subset of dataframe by adding a column of  percentage value 
-  of every possible combination of happiness, year and job satisfaction and similarly
-  another subset for that showed percentage value of every possible combination of 
-  happiness, year and financial satisfaction.
-
 ```{r}
-
-# Calculations prior to plotting happiness levels compared to the job satisfaction over the course of 50 Years.
-
-gss_satjob <- gss1_hsjcsf %>% 
-  group_by(year, happy, satjob) %>% 
-  summarise(total_count=n(),
-            .groups = 'drop') %>% 
-  as.data.frame()
-
-gss_satjob_perc <- transform(gss_satjob,
-                             perc = ave(total_count,
-                                        year,
-                                        FUN = prop.table))
-
-gss_satjob_perc$perc = gss_satjob_perc$perc * 100
-
-
-# Plot to analyze happiness levels compared to the job satisfaction over the course of 50 Years.
-
-ggplotly(gss_satjob_perc %>%
-           ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=happy)) +
-           geom_point()+
-           facet_wrap(. ~ satjob, nrow = 4)+
-           ylab("Percentage Happiness ")+
-           scale_color_manual(values=c("#19272e", "#c7a04e", "#39db7f")))
-
-
-gif1 <- gss_satjob_perc %>%
-           ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=happy)) +
-           geom_point()+
-           ylab("Percentage Happiness ")+
-           facet_wrap(. ~ satjob, nrow = 4)+
-           transition_reveal(year)+
-           scale_color_manual(values=c("#19272e", "#c7a04e", "#39db7f"))
-
-
-animate(gif1, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
-anim_save("gif1.gif")
-
-```
-This Plot illustrates that the percentage happiness changes with time and the financial and socio economic situation at a certain point of time in history till date. 
-
-```{r}
-
-# Calculations prior to plotting happiness levels compared to the financial satisfaction over the course of 50 Years.
-
-gss_satfin <- gss1_hsjcsf %>% 
-  group_by(year, happy, satfin) %>% 
-  summarise(total_count=n(),
-            .groups = 'drop') %>% 
-  as.data.frame()
-
-gss_satfin_perc <- transform(gss_satfin,
-                             perc = ave(total_count,
-                                        year,
-                                        FUN = prop.table))
-
-gss_satfin_perc$perc = gss_satfin_perc$perc * 100
-
-# Plot to analyze happiness levels compared to the financial satisfaction over the course of 50 Years.
-
-ggplotly(gss_satfin_perc %>%
-           ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=happy)) +
-           geom_point()+
-           facet_wrap(. ~ satfin, nrow = 3)+
-           ylab("Percentage Happiness ")+
-           scale_color_manual(values=c("#19272e", "#c7a04e", "#39db7f")))  
-
-gif2<-gss_satfin_perc %>%
-  ggplot( aes(x=year, y=perc)) +
-  geom_line(aes(colour=happy)) +
-  geom_point()+
-  facet_wrap(. ~ satfin, nrow = 3)+
-  ylab("Percentage Happiness ")+
-  scale_fill_manual(values=c("#19272e", "#c7a04e", "#39db7f"))+
-  transition_reveal(year) 
-
-
-animate(gif2, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
-anim_save("gif2.gif")
 
 ```
 
 
-This Plot illustrates that the percentage happiness changes with time and the financial and socio economic situation at a certain point of time in history till date. 
+INSERT COMMENTARY
