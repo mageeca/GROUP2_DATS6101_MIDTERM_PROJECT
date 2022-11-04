@@ -33,8 +33,65 @@ gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "M
 
 ### Descriptive Statistics
 ```{r}
+pie_happy <- gss1_hsjcsf %>% count(happy) %>%
+  arrange(desc(happy)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_happy)+
+  geom_col(mapping = aes(x="", y=percentages, fill=happy)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+```
+The Pie chart shows the more than half of the people are pretty happy from 1972 to 2021.
+
+
+
+
+```{r}
+pie_class <- gss1_hsjcsf %>% count(class_) %>%
+  arrange(desc(class_)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_class)+
+  geom_col(mapping = aes(x="", y=percentages, fill=class_)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+```
+
+ A pie chart shows the classes of people of America. It show that nearly half of the people fall under working class and about 43% people are middle class in America.
+ 
+```{r}
+pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
+  arrange(desc(satfin)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_satfin)+
+  geom_col(mapping = aes(x="", y=percentages, fill=satfin)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+```
+
+
+It shows that nearly half of the people are more or less satisfied with their financial status whereas about same percentage of people are pretty well satisfied and Not satisfied at all with their Financial.
+
+
+
+```{r}
+pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
+  arrange(desc(satjob)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_satjob)+
+  geom_col(mapping = aes(x="", y=percentages, fill=satjob)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
 
 ```
+The pie chart shows about 48% of american people's are very satisfied with their job whereas a little people are dissatisfied with their job.
 
 INSERT COMMENTARY HERE
 
@@ -77,7 +134,50 @@ ggplot(gss1_hsjcsf, aes(x=satfin, fill=happy)) +
 
 This figure illustrates the relationship between individuals' financial satisfaction and general happiness by social class. There is also a disproportionate number of individuals in the middle and working class groups in comparison to the lower and upper class individuals. For lower, working, and middle class groups, a majority of individuals were more or less satisfied with their financial situation and reported feeling pretty happy in their life. It is important to note that there is a similar trend in the middle class group for both job satisfaction and financial satisfaction in relation to happiness. Middle class individuals that are highly satisfied with their job or financial situation were equally high in both the pretty happy and very happy responses.For upper class individuals, a large number were pretty well satisfied with their financial situation and reported being very happy in life. As we can see, the results show that the higher the social class the more you become satisfied with your financial situation and the more you report being very happy while the more you go down in class, the more your satisfaction and happiness become average (as in more or less satisfied and pretty happy).
 
+### Pie Chart
+```{r}
+library(grid)
+library(gridExtra)
+par(mfrow=c(1,4))
+pie_happy <- gss1_hsjcsf %>% count(happy) %>%
+  arrange(desc(happy)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
 
+pie_class <- gss1_hsjcsf %>% count(class_) %>%
+  arrange(desc(class_)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
+  arrange(desc(satfin)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
+  arrange(desc(satjob)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+plot1<-ggplot(pie_happy, aes(x="", y=percentages, fill=happy)) +
+geom_bar(stat="identity", width=1) + 
+coord_polar("y", start=0)
+
+plot2<-ggplot(pie_class, aes(x="", y=percentages, fill=class_)) +
+geom_bar(stat="identity", width=1) + 
+coord_polar("y", start=0)
+
+plot3<-ggplot(pie_satfin, aes(x="", y=percentages, fill=satfin)) +
+geom_bar(stat="identity", width=1) + 
+coord_polar("y", start=0)
+
+plot4<-ggplot(pie_satjob, aes(x="", y=percentages, fill=satjob)) +
+geom_bar(stat="identity", width=1) + 
+coord_polar("y", start=0)
+
+grid.arrange(plot1, plot2, plot3, plot4, ncol=3)
+```
+```
 
 ### Time-Series Analysis
 ```{r}
