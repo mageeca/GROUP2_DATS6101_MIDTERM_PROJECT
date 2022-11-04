@@ -599,7 +599,7 @@ ggplot(data= pie_happy)+
   coord_polar(theta = "y") +
   geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
 ```
-
+The Pie chart shows the more than half of the people are pretty happy from 1972 to 2021.
 ```{r}
 pie_class <- gss1_hsjcsf %>% count(class_) %>%
   arrange(desc(class_)) %>% 
@@ -612,6 +612,7 @@ ggplot(data= pie_class)+
   geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
 ```
 
+ A pie chart shows the classes of people of America. It show that nearly half of the people fall under working class and about 43% people are middle class in America.
 ```{r}
 pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
   arrange(desc(satfin)) %>% 
@@ -624,7 +625,7 @@ ggplot(data= pie_satfin)+
   geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
 ```
 
-
+It shows that nearly half of the people are more or less satisfied with their financial status whereas about same percentage of people are pretty well satisfied and Not satisfied at all with their Financial.
 ```{r}
 pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
   arrange(desc(satjob)) %>% 
@@ -637,6 +638,8 @@ ggplot(data= pie_satjob)+
   geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
 
 ```
+The pie chart shows about 48% of american people's are very satisfied with their job whereas a little people are dissatisfied with their job.
+
 ## Including Plots
 
 You can also embed plots, for example:
