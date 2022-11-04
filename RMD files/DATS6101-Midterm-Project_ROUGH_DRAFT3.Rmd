@@ -9,6 +9,13 @@ output: html_document
 library(ezids)
 library(dplyr)
 library(ggplot2)
+library(plotly)
+library(ggeasy)
+library(ggpubr)
+library(gganimate)
+library(gifski)
+library(transformr)
+library(scales)
 
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 gss1 <- data.frame(read.csv("/Users/carriemagee/Desktop/GROUP2_DATS6101_MIDTERM_PROJECT/GSS.csv"))
@@ -80,9 +87,98 @@ The cross tabulation above shows the frequency of job satisfaction levels by soc
 
 
 ### Time-Series Analysis
+
+  We created one subset of dataframe by adding a column of  percentage value 
+  of every possible combination of happiness, year and job satisfaction and similarly
+  another subset for that showed percentage value of every possible combination of 
+  happiness, year and financial satisfaction.
+
 ```{r}
+
+# Calculations prior to plotting happiness levels compared to the job satisfaction over the course of 50 Years.
+
+gss_satjob <- gss1_hsjcsf %>% 
+  group_by(year, happy, satjob) %>% 
+  summarise(total_count=n(),
+            .groups = 'drop') %>% 
+  as.data.frame()
+
+gss_satjob_perc <- transform(gss_satjob,
+                             perc = ave(total_count,
+                                        year,
+                                        FUN = prop.table))
+
+gss_satjob_perc$perc = gss_satjob_perc$perc * 100
+
+
+# Plot to analyze happiness levels compared to the job satisfaction over the course of 50 Years.
+
+ggplotly(gss_satjob_perc %>%
+           ggplot( aes(x=year, y=perc)) +
+           geom_line(aes(colour=happy)) +
+           geom_point()+
+           facet_wrap(. ~ satjob, nrow = 4)+
+           ylab("Percentage Happiness ")+
+           scale_color_manual(values=c("#19272e", "#c7a04e", "#39db7f")))
+
+
+gif1 <- gss_satjob_perc %>%
+           ggplot( aes(x=year, y=perc)) +
+           geom_line(aes(colour=happy)) +
+           geom_point()+
+           ylab("Percentage Happiness ")+
+           facet_wrap(. ~ satjob, nrow = 4)+
+           transition_reveal(year)+
+           scale_color_manual(values=c("#19272e", "#c7a04e", "#39db7f"))
+
+
+animate(gif1, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
+anim_save("gif1.gif")
+
+```
+This Plot illustrates that the percentage happiness changes with time and the financial and socio economic situation at a certain point of time in history till date. 
+
+```{r}
+
+# Calculations prior to plotting happiness levels compared to the financial satisfaction over the course of 50 Years.
+
+gss_satfin <- gss1_hsjcsf %>% 
+  group_by(year, happy, satfin) %>% 
+  summarise(total_count=n(),
+            .groups = 'drop') %>% 
+  as.data.frame()
+
+gss_satfin_perc <- transform(gss_satfin,
+                             perc = ave(total_count,
+                                        year,
+                                        FUN = prop.table))
+
+gss_satfin_perc$perc = gss_satfin_perc$perc * 100
+
+# Plot to analyze happiness levels compared to the financial satisfaction over the course of 50 Years.
+
+ggplotly(gss_satfin_perc %>%
+           ggplot( aes(x=year, y=perc)) +
+           geom_line(aes(colour=happy)) +
+           geom_point()+
+           facet_wrap(. ~ satfin, nrow = 3)+
+           ylab("Percentage Happiness ")+
+           scale_color_manual(values=c("#19272e", "#c7a04e", "#39db7f")))  
+
+gif2<-gss_satfin_perc %>%
+  ggplot( aes(x=year, y=perc)) +
+  geom_line(aes(colour=happy)) +
+  geom_point()+
+  facet_wrap(. ~ satfin, nrow = 3)+
+  ylab("Percentage Happiness ")+
+  scale_fill_manual(values=c("#19272e", "#c7a04e", "#39db7f"))+
+  transition_reveal(year) 
+
+
+animate(gif2, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
+anim_save("gif2.gif")
 
 ```
 
 
-INSERT COMMENTARY
+This Plot illustrates that the percentage happiness changes with time and the financial and socio economic situation at a certain point of time in history till date. 
