@@ -39,130 +39,115 @@ nrow(gss1_hsjcsf)
 #  geom_bar(position = "dodge")
 
 #Stacked Numeric Data containing bar plot
-ggplot(data = gss1_hsjcsf, aes(x = year, fill = happy)) +
-  geom_bar(position = "fill") + ylab("proportion") +
-  stat_count(geom = "text", 
-             aes(label = stat(count)),
-             position=position_fill(vjust=0.5), colour="white")
+# ggplot(data = gss1_hsjcsf, aes(x = year, y= satfin,  fill = happy)) +
+#   geom_bar(position = "fill") + ylab("proportion") +
+#   stat_count(geom = "text",
+#              aes(label = stat(count)),
+#              position=position_fill(vjust=0.5), colour="white")
 
 
-#just density curve
+# kernel density curve
+# ggplot(gss1_hsjcsf, aes(x = year, color=happy, fill=happy)) + 
+#   geom_density(alpha=.5) +
+#   scale_fill_manual(values=c("#200b33", "#1ec7fa", "#ff2626"))
+# 
+# 
+# ggplot(gss1_hsjcsf, aes(x = year, color=satfin, fill=satfin)) + 
+#   geom_density(alpha=.58) +
+#   scale_fill_manual(values=c("#ff2626", "#1ec7fa", "#0f0354"))
+# 
+# ggplot(gss1_hsjcsf, aes(x = year, color=satjob, fill=satjob)) + 
+#   geom_density(alpha=.5) +
+#   scale_fill_manual(values=c("#5aed92", "#1ec7fa", "#ff2626", "#0f0354"))
 
-ggplot(gss1_hsjcsf) + 
-  stat_density(aes(x=year, y=..scaled..,color=happy), position="dodge", geom="line")
 
-# Histogram overlaid with kernel density curve
-ggplot(gss1_hsjcsf, aes(x = year, fill = happy)) + 
-  geom_histogram(aes(y=..density..),      # Histogram with density instead of count on y-axis
-                 binwidth=0.7,
-                 colour="black", fill="white") +
-  geom_density(alpha=.7, fill="#FF6666") 
-
+#Histogram and kernel density 
+# ggplot(gss1_hsjcsf, aes(x = year, color=satfin, fill=satfin)) + 
+#   geom_histogram(aes(y=..density..),      # Histogram with density instead of count on y-axis
+#                  binwidth=1.39,alpha=0.9,
+#                  colour="black", fill="#f5b576") +
+#   geom_density(alpha=.58) +
+#   scale_fill_manual(values=c("#ff2626", "#1ec7fa", "#0f0354"))
 
 
-#HAPPINESS TSA
+#TSA Calculation
 
-gss_happy <- gss1_hsjcsf %>% 
-  group_by(year, happy) %>% 
+gss_satfin <- gss1_hsjcsf %>% 
+  group_by(year, happy, satfin) %>% 
   summarise(total_count=n(),
             .groups = 'drop') %>% 
   as.data.frame()
 
-gss_happy_perc1 <- transform(gss_happy,
+gss_satfin_perc <- transform(gss_satfin,
                              perc = ave(total_count,
                                         year,
                                         FUN = prop.table))
 
-gss_happy_perc1$perc = gss_happy_perc1$perc * 100
+gss_satfin_perc$perc = gss_satfin_perc$perc * 100
 
-#plot
 
-ggplotly(gss_happy_perc1 %>%
+
+gss_satjob <- gss1_hsjcsf %>% 
+  group_by(year, happy, satjob) %>% 
+  summarise(total_count=n(),
+            .groups = 'drop') %>% 
+  as.data.frame()
+
+gss_satjob_perc <- transform(gss_satjob,
+                             perc = ave(total_count,
+                                        year,
+                                        FUN = prop.table))
+
+gss_satjob_perc$perc = gss_satjob_perc$perc * 100
+
+
+#satfin and happiness plot
+
+ggplotly(gss_satfin_perc %>%
            ggplot( aes(x=year, y=perc)) +
            geom_line(aes(colour=happy)) +
            geom_point()+
-           ylab("Percentage Happy Satisfaction "))
+           facet_wrap(. ~ satfin, nrow = 3)+
+           ylab("Percentage Happiness ")+
+           scale_color_manual(values=c("#19272e", "#c7a04e", "#39db7f")))  
 
-gif1<-gss_happy_perc1 %>%
-           ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=happy)) +
-           geom_point()+
-           ylab("Percentage Happy Satisfaction ")+
-           transition_reveal(year)  
+gif1<-gss_satfin_perc %>%
+  ggplot( aes(x=year, y=perc)) +
+  geom_line(aes(colour=happy)) +
+  geom_point()+
+  facet_wrap(. ~ satfin, nrow = 3)+
+  ylab("Percentage Happiness ")+
+  scale_fill_manual(values=c("#19272e", "#c7a04e", "#39db7f"))+
+  transition_reveal(year) 
 
 
-animate(gif1, renderer = gifski_renderer(), fps = 60, height = 400, width =400)
+animate(gif1, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
 anim_save("gif1.gif")
 
 
+##satjob and happiness plot
 
-#SATFIN TSA
-gss_satfin <- gss1_hsjcsf %>% 
-  group_by(year, satfin) %>% 
-  summarise(total_count=n(),
-            .groups = 'drop') %>% 
-  as.data.frame()
-
-gss_satfin_perc1 <- transform(gss_satfin,
-                              perc = ave(total_count,
-                                         year,
-                                         FUN = prop.table))
-
-gss_satfin_perc1$perc = gss_satfin_perc1$perc * 100
-
-#plot
-
-ggplotly(gss_satfin_perc1 %>%
+ggplotly(gss_satjob_perc %>%
            ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=satfin)) +
+           geom_line(aes(colour=happy)) +
            geom_point()+
-           ylab("Percentage Financial Satisfaction "))
+           facet_wrap(. ~ satjob, nrow = 4)+
+           ylab("Percentage Happiness ")+
+           scale_color_manual(values=c("#19272e", "#c7a04e", "#39db7f")))
 
-gif2 <- gss_satfin_perc1 %>%
+
+gif2 <- gss_satjob_perc %>%
            ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=satfin)) +
+           geom_line(aes(colour=happy)) +
            geom_point()+
-           ylab("Percentage Financial Satisfaction ")+
-           transition_reveal(year)
+           ylab("Percentage Happiness ")+
+           facet_wrap(. ~ satjob, nrow = 4)+
+           transition_reveal(year)+
+           scale_color_manual(values=c("#19272e", "#c7a04e", "#39db7f")))
 
-animate(gif2, renderer = gifski_renderer(), fps = 60, height = 400, width =400)
+
+animate(gif2, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
 anim_save("gif2.gif")
-  
-
-
-#SATJOB INTERACTIVE TSA
-
-gss_satjob <- gss1_hsjcsf %>% 
-  group_by(year, satjob) %>% 
-  summarise(total_count=n(),
-            .groups = 'drop') %>% 
-  as.data.frame()
-
-gss_satjob_perc1 <- transform(gss_satjob,
-                              perc = ave(total_count,
-                                         year,
-                                         FUN = prop.table))
-
-gss_satjob_perc1$perc = gss_satjob_perc1$perc * 100
-
-#plot
-
-ggplotly(gss_satfin_perc1 %>%
-           ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=satfin)) +
-           geom_point()+
-           ylab("Percentage Financial Satisfaction "))
-
-gif3<-gss_satjob_perc1 %>%
-           ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=satjob)) +
-           geom_point()+
-           ylab("Percentage Job Satisfaction")+
-           transition_reveal(year)
-
-animate(gif3, renderer = gifski_renderer(), fps = 60, height = 400, width =800)
-anim_save("gif3.gif")
-
 
 
 # making plot of relationship between class and job satisfaction
