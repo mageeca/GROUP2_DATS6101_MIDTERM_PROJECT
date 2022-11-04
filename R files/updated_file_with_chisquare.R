@@ -1,26 +1,10 @@
----
-title: "Untitled"
-output: html_document
-date: "2022-10-23"
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r}
 library(ezids)
 library(dplyr)
 library(ggplot2)
 
 # importing data
-gss1 <- data.frame(read.csv("GSS.csv"))
+
+gss1 <- data.frame(read.csv("/Users/carriemagee/Desktop/GROUP2_DATS6101_MIDTERM_PROJECT/GSS.csv"))
 
 str(gss1)
 
@@ -37,7 +21,7 @@ gss1_hsj = subset(gss1_h, satjob == "Very satisfied" | satjob == "Moderately sat
 gss1_hsjc = subset(gss1_hsj, class_ == "Lower class" | class_ == "Working class" | class_ == "Middle class" | class_ == "Upper class")
 
 gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "More or less satisfied" | satfin == "Not satisfied at all")
-
+head(gss1_hsjcsf)
 gss1_hsjcsf = select(gss1_hsjcsf, -id_)
 
 nrow(gss1_hsjcsf)
@@ -493,156 +477,13 @@ ggplot(gss1_hsjcsf, aes(x=satfin, fill=happy)) +
   theme_bw()+theme(plot.title = element_text(face="bold",hjust = 0.5))+
   scale_fill_brewer(palette = "Set2")+scale_x_discrete(limits = c("Not satisfied at all","More or less satisfied","Pretty well satisfied"))
 
-Working_class_each_year = numeric()
-for(i in 1:length(unique(gss1_hsjcsf$year))){
-  year = unique(gss1_hsjcsf$year)[i]
-  Working_class_each_year[i] = sum(gss1_hsjcsf [ gss1_hsjcsf$year == year,]$class_ == "Working class")/length(gss1_hsjcsf [ gss1_hsjcsf$year == year,]$class_ == "Working class")
-}
-Working_class_each_year
-plot(unique(gss1_hsjcsf$year), Working_class_each_year,type = 'l', xlab = 'Year', ylab = 'Working class percentage')
+#chi squared class and sat job
+tablejob = table(gss1_hsjcsf$class_,gss1_hsjcsf$satjob)
+chisq.test(tablejob, correct=T)
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$satjob, var.col = gss1_hsjcsf$class_, title = "Table Title", show.row.prc = TRUE)
 
-  
-Working_class_each_year = numeric()
-for(i in 1:length(unique(gss1$year))){
-  year = unique(gss1$year)[i]
-  Working_class_each_year[i] = sum(gss1 [ gss1$year == year,]$class_ == "Working class" )/length(gss1 [ gss1$year == year,]$class_ == "Working class" )
-}
-Working_class_each_year
-plot(unique(gss1$year), Working_class_each_year,type = 'l', xlab = 'Year', ylab = "wokring class percentage")
-
-Working_class_each_year2 = numeric()
-for(i in 1:length(unique(gss1$year))){
-  year = unique(gss1$year)[i]
-  Working_class_each_year2[i] = sum(gss1 [ gss1$year == year,]$class_ == "Middle class" )/length(gss1 [ gss1$year == year,]$satjob == "Middle class" )
-}
-Working_class_each_year2
-plot(unique(gss1$year), Working_class_each_year2,type = 'l', xlab = 'Year', ylab = "Middleclass percentage")
-
-Working_class_each_year3 = numeric()
-for(i in 1:length(unique(gss1$year))){
-  year = unique(gss1$year)[i]
-  Working_class_each_year3[i] = sum(gss1 [ gss1$year == year,]$class_ == "Lower class" )/length(gss1 [ gss1$year == year,]$class_ == "Lower class"  )
-}
-Working_class_each_year3
-plot(unique(gss1$year), Working_class_each_year3,type = 'l', xlab = 'Year', ylab = "Lowerclass percentage")
-
-Working_class_each_year3
-
-
-plot(unique(gss1$year), Working_class_each_year3,type = 'l', xlab = 'Year', ylab = "Lowerclass percentage", 
-     ylim = c(0,0.5))
-lines(unique(gss1$year), Working_class_each_year2,type = 'l',col = 'red')
-lines(unique(gss1$year), Working_class_each_year,type = 'l',col = 'yellow')
-
-
-
-Happy_each_year = numeric()
-for(i in 1:length(unique(gss1_hsjcsf$year))){
-  year = unique(gss1_hsjcsf$year)[i]
-  Happy_each_year[i] = sum(gss1_hsjcsf [ gss1_hsjcsf$year == year,]$happy == "Very happy")/length(gss1_hsjcsf [ gss1_hsjcsf$year == year,]$happy == "Very happy")
-}
- Happy_each_year
-plot(unique(gss1_hsjcsf$year),  Happy_each_year,type = 'l', xlab = 'Year', ylab = 'Very happy percentage')
-
-
-```
-
-
-```{r}
-gss_satjob <- gss1_hsjcsf %>% 
-  group_by(year, satjob) %>% 
-  summarise(total_count=n(),
-            .groups = 'drop') %>% 
-  as.data.frame()
-
-gss_satjob_perc1 <- transform(gss_satjob,
-                              perc = ave(total_count,
-                                         year,
-                                         FUN = prop.table))
-
-gss_satjob_perc1$perc = gss_satjob_perc1$perc * 100
-
-
- gss_satjob_perc1 %>%
-  ggplot( aes(x=year, y=perc)) +
-    geom_line(aes(colour=satjob)) +
-    ggtitle("Line chart for Job Satisfication") 
-   
-    
-
-gss_satjob_perc1 %>%
-  ggplot( aes(x=year, y=perc)) +
-    geom_line(aes(colour=satjob)) +
-    geom_point(color="#69b3a2", size=2) +
-    ggtitle("Connected scatterplot for Job Satisfication") 
-   
-   
-```
-
-
-```{r}
-ggplot(gss1_hsjcsf,
-       aes(x = year, fill = happy))+
-  geom_density(alpha = 0.3)
-
-```
-
-
-```{r}
-pie_happy <- gss1_hsjcsf %>% count(happy) %>%
-  arrange(desc(happy)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
-
-ggplot(data= pie_happy)+
-  geom_col(mapping = aes(x="", y=percentages, fill=happy)) +
-  coord_polar(theta = "y") +
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
-```
-
-```{r}
-pie_class <- gss1_hsjcsf %>% count(class_) %>%
-  arrange(desc(class_)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
-
-ggplot(data= pie_class)+
-  geom_col(mapping = aes(x="", y=percentages, fill=class_)) +
-  coord_polar(theta = "y") +
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
-```
-
-```{r}
-pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
-  arrange(desc(satfin)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
-
-ggplot(data= pie_satfin)+
-  geom_col(mapping = aes(x="", y=percentages, fill=satfin)) +
-  coord_polar(theta = "y") +
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
-```
-
-
-```{r}
-pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
-  arrange(desc(satjob)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
-
-ggplot(data= pie_satjob)+
-  geom_col(mapping = aes(x="", y=percentages, fill=satjob)) +
-  coord_polar(theta = "y") +
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
-
-```
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+#chi squared class and sat fin
+tablefin = table(gss1_hsjcsf$class_,gss1_hsjcsf$satfin)
+tablefin
+chisq.test(tablefin, correct=T)
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$satfin, var.col = gss1_hsjcsf$class_, title = "Table Title", show.row.prc = TRUE)
