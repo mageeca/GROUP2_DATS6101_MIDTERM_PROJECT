@@ -41,7 +41,49 @@ INSERT COMMENTARY HERE
 
 ### Descriptive Statistics (frequency distribution and mode)
 ```{r}
+# Pie Chart for Happy
+pie_happy <- gss1_hsjcsf %>% count(happy) %>%
+  arrange(desc(happy)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
 
+ggplot(data= pie_happy)+
+  geom_col(mapping = aes(x="", y=percentages, fill=happy)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+
+# Pie Chart for class
+pie_class <- gss1_hsjcsf %>% count(class_) %>%
+  arrange(desc(class_)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_class)+
+  geom_col(mapping = aes(x="", y=percentages, fill=class_)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+
+# Pie Chart for Financial Satisfaction
+pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
+  arrange(desc(satfin)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_satfin)+
+  geom_col(mapping = aes(x="", y=percentages, fill=satfin)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+
+# Pie Chart for Job Satisfaction
+pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
+  arrange(desc(satjob)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+ggplot(data= pie_satjob)+
+  geom_col(mapping = aes(x="", y=percentages, fill=satjob)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
 ```
 
 INSERT COMMENTARY HERE
