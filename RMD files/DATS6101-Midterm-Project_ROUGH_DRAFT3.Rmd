@@ -1,7 +1,22 @@
 ---
 title: "The Relationship between Financial and Job Satisfaction and Levels of Happiness Among Different Social Classes "
 author: "Carrie Magee, Abhimanyu Barun, Ambar Pathak, and Kismat Khatri"
-output: html_document
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    number_sections: yes
+    always_allow_html: true
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  word_document:
+    toc: yes
+    toc_depth: '3'
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
 ---
 
 ```{r setup, include=FALSE}
