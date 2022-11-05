@@ -9,6 +9,16 @@ output: html_document
 library(ezids)
 library(dplyr)
 library(ggplot2)
+#library(DataExplorer)
+library(plotly)
+library(ggeasy)
+library(ggpubr)
+library(gganimate)
+library(gifski)
+library(transformr)
+library(scales)
+library(grid)
+library(gridExtra)
 
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 gss1 <- data.frame(read.csv("../GSS.csv"))
@@ -41,7 +51,11 @@ pie_happy <- gss1_hsjcsf %>% count(happy) %>%
 ggplot(data= pie_happy)+
   geom_col(mapping = aes(x="", y=percentages, fill=happy)) +
   coord_polar(theta = "y") +
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
+  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f"))+
+  ylab("Percentages")+
+  guides(fill=guide_legend(title="Happiness"))
+  
 ```
 The Pie chart shows the more than half of the people are pretty happy from 1972 to 2021.
 
@@ -57,7 +71,10 @@ pie_class <- gss1_hsjcsf %>% count(class_) %>%
 ggplot(data= pie_class)+
   geom_col(mapping = aes(x="", y=percentages, fill=class_)) +
   coord_polar(theta = "y") +
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
+  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+
+  ylab("Percentages")+
+  guides(fill=guide_legend(title="Happiness"))
 ```
 
  A pie chart shows the classes of people of America. It show that nearly half of the people fall under working class and about 43% people are middle class in America.
@@ -71,7 +88,10 @@ pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
 ggplot(data= pie_satfin)+
   geom_col(mapping = aes(x="", y=percentages, fill=satfin)) +
   coord_polar(theta = "y") +
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
+  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+
+  ylab("Percentages")+
+  guides(fill=guide_legend(title="Financial Satifaction"))
 ```
 
 
@@ -88,7 +108,10 @@ pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
 ggplot(data= pie_satjob)+
   geom_col(mapping = aes(x="", y=percentages, fill=satjob)) +
   coord_polar(theta = "y") +
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
+  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+
+  ylab("Percentages")+
+  guides(fill=guide_legend(title="Job Satifaction"))
 
 ```
 The pie chart shows about 48% of american people's are very satisfied with their job whereas a little people are dissatisfied with their job.
@@ -114,9 +137,9 @@ The cross tabulation above shows the frequency of happiness levels by job satisf
 ggplot(gss1_hsjcsf, aes(x=satjob, fill=happy)) +
   geom_bar(position = "dodge")+
   facet_wrap(~class_)  +
-  labs(title="Relationship Between Job Satisfaction and Happiness Levels by Social Class",x="Job Satisfaction", y = "Frequency",fill="Level of Happiness")+
+  labs(title="Relationship Between Job Satisfaction and Happiness Levels by Social Class",x="Job Satisfaction", y = "Frequency",fill="Happiness")+
   theme_bw()+theme(plot.title = element_text(face="bold",hjust = 0.5))+
-  scale_fill_brewer(palette = "Set2")+scale_x_discrete(limits = c("Very dissatisfied","A little dissatisfied", "Moderately satisfied","Very satisfied"))
+  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+scale_x_discrete(limits = c("Very dissatisfied","A little dissatisfied", "Moderately satisfied","Very satisfied"))
 ```
 
 The figure above looks at the relationship between individuals' job satisfaction and general happiness by social class. For context, there is a larger number of working and middle class individuals than upper and lower class individuals. The results show that many lower class individuals were very satisfied with their job and that those same individuals were pretty happy overall. A majority of working class individuals were also very satisfied with their job and were also pretty happy. Interestingly, many middle class individuals were very satisfied with their jobs but reported being equally pretty happy and very happy in their lives. The upper class individuals were the only group that had more very happy individuals with very high job satisfaction. In other words, most individuals within the four social class groups were very satisfied with their jobs but only upper class individuals had more very happy individuals compared to pretty happy individuals. These results provide some insight into how social class may have a greater influence on individual's feelings of financial satisfaction and thus also influencing their feelings of happiness in life.  
@@ -127,17 +150,15 @@ The figure above looks at the relationship between individuals' job satisfaction
 ggplot(gss1_hsjcsf, aes(x=satfin, fill=happy)) +
   geom_bar(position = "dodge")+
   facet_wrap(~class_)  +
-  labs(title="Relationship Between Financial Satisfaction and Happiness Levels by Social Class",x="Financial Satisfaction", y = "Frequency",fill="Level of Happiness")+
+  labs(title="Relationship Between Financial Satisfaction and Happiness Levels by Social Class",x="Financial Satisfaction", y = "Frequency",fill="Happiness")+
   theme_bw()+theme(plot.title = element_text(face="bold",hjust = 0.5))+
-  scale_fill_brewer(palette = "Set2")+scale_x_discrete(limits = c("  Not satisfied at all","More or less satisfied","Pretty well satisfied"),guide = guide_axis(n.dodge=2))
+  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+scale_x_discrete(limits = c("  Not satisfied at all","More or less satisfied","Pretty well satisfied"),guide = guide_axis(n.dodge=2))
 ```
 
 This figure illustrates the relationship between individuals' financial satisfaction and general happiness by social class. There is also a disproportionate number of individuals in the middle and working class groups in comparison to the lower and upper class individuals. For lower, working, and middle class groups, a majority of individuals were more or less satisfied with their financial situation and reported feeling pretty happy in their life. It is important to note that there is a similar trend in the middle class group for both job satisfaction and financial satisfaction in relation to happiness. Middle class individuals that are highly satisfied with their job or financial situation were equally high in both the pretty happy and very happy responses.For upper class individuals, a large number were pretty well satisfied with their financial situation and reported being very happy in life. As we can see, the results show that the higher the social class the more you become satisfied with your financial situation and the more you report being very happy while the more you go down in class, the more your satisfaction and happiness become average (as in more or less satisfied and pretty happy).
 
 ### Pie Chart
 ```{r}
-library(grid)
-library(gridExtra)
 par(mfrow=c(1,4))
 pie_happy <- gss1_hsjcsf %>% count(happy) %>%
   arrange(desc(happy)) %>% 
@@ -161,30 +182,30 @@ pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
 
 plot1<-ggplot(pie_happy, aes(x="", y=percentages, fill=happy)) +
 geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)
+coord_polar("y", start=0)+
+scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f"))
 
 plot2<-ggplot(pie_class, aes(x="", y=percentages, fill=class_)) +
 geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)
+coord_polar("y", start=0)+
+scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))
 
 plot3<-ggplot(pie_satfin, aes(x="", y=percentages, fill=satfin)) +
 geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)
+coord_polar("y", start=0)+
+scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f"))  
 
 plot4<-ggplot(pie_satjob, aes(x="", y=percentages, fill=satjob)) +
 geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)
+coord_polar("y", start=0)+
+scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))
 
 grid.arrange(plot1, plot2, plot3, plot4, ncol=3)
-```
 ```
 
 ### Time-Series Analysis
 
-  We created one subset of dataframe by adding a column of  percentage value 
-  of every possible combination of happiness, year and job satisfaction and similarly
-  another subset for that showed percentage value of every possible combination of 
-  happiness, year and financial satisfaction.
+We created one subset of dataframe by adding a column of  percentage valueof every possible combination of happiness, year and job satisfaction and similarly another subset for that showed percentage value of every possible combination of happiness, year and financial satisfaction.
 
 ```{r}
 
