@@ -11,7 +11,7 @@ library(dplyr)
 library(ggplot2)
 
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
-gss1 <- data.frame(read.csv("/Users/carriemagee/Desktop/GROUP2_DATS6101_MIDTERM_PROJECT/GSS.csv"))
+gss1 <- data.frame(read.csv("../GSS.csv"))
 #cleaning data
 gss1_h = subset(gss1, happy == "Very happy" | happy == "Pretty happy" | happy == "Not too happy")
 gss1_hsj = subset(gss1_h, satjob == "Very satisfied" | satjob == "Moderately satisfied" | satjob == "A little dissatisfied" | satjob == "Very dissatisfied")
@@ -80,9 +80,140 @@ This figure illustrates the relationship between individuals' financial satisfac
 
 
 ### Time-Series Analysis
+
+  We created one subset of dataframe by adding a column of  percentage value 
+  of every possible combination of happiness, year and job satisfaction and similarly
+  another subset for that showed percentage value of every possible combination of 
+  happiness, year and financial satisfaction.
+
 ```{r}
+
+# Calculations prior to plotting happiness levels compared to the job satisfaction over the course of 50 Years.
+
+gss_satjob <- gss1_hsjcsf %>% 
+  group_by(year, happy, satjob) %>% 
+  summarise(total_count=n(),
+            .groups = 'drop') %>% 
+  as.data.frame()
+
+gss_satjob_perc <- transform(gss_satjob,
+                             perc = ave(total_count,
+                                        year,
+                                        FUN = prop.table))
+
+# Plot to analyze happiness levels compared to the job satisfaction over the course of 50 Years.
+
+ggplotly(gss_satjob_perc %>%
+           ggplot( aes(x=year, y=perc)) +
+           geom_line(aes(colour=happy)) +
+           geom_point(size=0.5)+
+           xlab("Years")+
+           ylab("Percentage Happiness")+
+           labs(title="Job Satisfaction Levels")+
+           theme(plot.title=element_text(hjust=0.5, size = 10))+
+           facet_wrap(. ~ satjob, nrow = 4)+
+           guides(color = guide_legend(title = "Happiness Type"))+
+           transition_reveal(year)+
+           scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f")))
+
+
+gif1 <- gss_satjob_perc %>%
+           ggplot( aes(x=year, y=perc)) +
+           geom_line(aes(colour=happy)) +
+           geom_point(size=0.5)+
+           xlab("Years")+
+           ylab("Percentage Happiness")+
+           labs(title="Job Satisfaction Levels")+
+           theme(plot.title=element_text(hjust=0.5, size = 10))+
+           facet_wrap(. ~ satjob, nrow = 4)+
+           guides(color = guide_legend(title = "Happiness Type"))+
+           transition_reveal(year)+
+           scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f"))
+
+
+animate(gif1, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
+anim_save("gif1.gif")
 
 ```
 
+The graph tells us a story of how job satisfaction relates to the level of happiness, over time, of the surveyed individuals, with time being on the x-axis, the percentage of happiness on the y-axis (with its subcategory description in the legends that are right aligned), and the job satisfaction in a matrix of panels where each panel represents one subcategory of job satisfaction. It is visible that a little amount of discomfort is imminent in human lives, which is exactly what the data tells us when we see that there is a group of people who are a little dissatisfied irrespective of the amount of happiness that they tend to experience in life. When it comes to being moderately satisfied by their job, we can see that this sub-metric is directly proportional to being moderately happy in life. It is also evident that the people who are very dissatisfied with their jobs tend to have very low levels of happiness as opposed to the people who are satisfied with their jobs, where the percentage happiness number is relatively high for pretty (moderately) happy and/or very happy people. If we add on to this by studying it based off of the x-axis, which is time, we can say that we see a sudden upward movement from 1998 to 2000 for the percentage value of pretty happy and very happy people, which is exactly where the professional and business services industry took off (as per the United States Bureau of Labor Statistics) because of feature-rich computers that had been commercialized and reliable technology came into being, which naturally meant a decline in the not-so-happy percentage. This is important in proving the validity of the data because moderately satisfied people are usually the ones who are earning just enough to not suffer but not enough to call themselves rich, and the sectoral shift from the manufacturing-heavy job sector to the professional and business services sector meant more job opportunities for the middle class families. The second major movement in the graph worth pointing out is when the global pandemic hit the United States. We see a symmetry in the not-very-happy percentage going up while the happiness percentage values are coming down irrespective, especially amongst the people who were very satisfied with their job as the country came to a stop due to a lockdown and people lost their job in the process.
 
-INSERT COMMENTARY
+
+
+```{r}
+
+# Calculations prior to plotting happiness levels compared to the financial satisfaction over the course of 50 Years.
+
+gss_satfin <- gss1_hsjcsf %>% 
+  group_by(year, happy, satfin) %>% 
+  summarise(total_count=n(),
+            .groups = 'drop') %>% 
+  as.data.frame()
+
+gss_satfin_perc <- transform(gss_satfin,
+                             perc = ave(total_count,
+                                        year,
+                                        FUN = prop.table))
+
+# Plot to analyze happiness levels compared to the financial satisfaction over the course of 50 Years.
+
+ggplotly(gss_satfin_perc %>%
+           ggplot( aes(x=year, y=perc)) +
+           geom_line(aes(colour=happy)) +
+           geom_point(size=0.5)+
+           facet_wrap(. ~ satfin, nrow = 3)+
+           xlab("Years")+
+           ylab("Percentage Happiness ")+
+           labs(title="Financial Satisfaction Levels ")+
+           theme(plot.title=element_text(hjust=0.5, size = 10))+
+           facet_wrap(. ~ satfin, nrow = 3)+
+           guides(color = guide_legend(title = "Happiness Type"))+
+           transition_reveal(year)+
+           scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f")))
+
+gif2<-gss_satfin_perc %>%
+  ggplot( aes(x=year, y=perc)) +
+  geom_line(aes(colour=happy)) +
+  geom_point(size=0.5)+
+  facet_wrap(. ~ satfin, nrow = 3)+
+  xlab("Years")+
+  ylab("Percentage Happiness ")+
+  labs(title="Financial Satisfaction Levels ")+
+  theme(plot.title=element_text(hjust=0.5, size = 10))+
+  facet_wrap(. ~ satfin, nrow = 3)+
+  guides(color = guide_legend(title = "Happiness Type"))+
+  transition_reveal(year)+
+  scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f"))
+
+
+animate(gif2, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
+anim_save("gif2.gif")
+
+```
+
+This plot illustrates the relationship between financial satisfaction and level of happiness over time for the surveyed individuals, with time on the x-axis, percentage happiness on the y-axis (with its subcategory description in the legends that are right aligned), and financial satisfaction in a matrix of panels where each panel represents one subcategory of job satisfaction. It is visible that when we stack a big picture metric like financial satisfaction against job satisfaction, and inside, if we look at people who are more or less satisfied with their financial status, we find that there are a huge percentage of people who are moderately happy and even very happy, with the not too happy percentage being on the low until COVID-19 hits the country, after which the not too happy value goes up, bringing down the very happy percentage equally dramatically. The people who are moderately happy in this category have a high number, which is directly proportional to their being partially satisfied, and this value is contrary to the not too happy and very happy values as it goes up, which can be backed up by the fact that these people are generally in the middle class or small business category, and COVID-19 gave them a huge opportunity to be profitable from their small or local businesses while all the big firms were shut down.When we move on to people not satisfied at all, we see that the happiness percentage never broke the 20 percent barrier and stays below that even after a gradual rise from 11.95 percent in 1972 and hitting the barrier three times in 1983, 1993, and 2010, respectively. The very happy number, as expected, stays at the lowest of the lows for not financially satisfied people, and the not happy percentage very slowly goes up with the rise in inflation over all these years with a steep upward movement, and this value represents the people already having financial problems, which rose after COVID-19. This is justified by the very happy number going further down along with the moderately happy number going down. If we move on to the last part of our graph, we find both happiness values pretty higher than the not too happy value, which makes sense considering the group we are highlighting right now is pretty well satisfied, and as the inflation rate went up along with time, we saw a slow and steady rise in the unhappiness percentage with a more steep climb from 2018 to 2020, which effectively caused a sharp fall for the very happy value, even for the pretty well satisfied group of people, which can be justified by the combined negative effect of inflation and COVID-19 affecting jobs and businesses alike.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
