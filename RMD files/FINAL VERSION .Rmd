@@ -33,7 +33,7 @@ library(gridExtra)
 library(cowplot)
 
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
-gss1 <- data.frame(read.csv("/Users/carriemagee/Desktop/GROUP2_DATS6101_MIDTERM_PROJECT/GSS.csv"))
+gss1 <- data.frame(read.csv("../GSS.csv"))
 #cleaning data
 gss1_h = subset(gss1, happy == "Very happy" | happy == "Pretty happy" | happy == "Not too happy")
 gss1_hsj = subset(gss1_h, satjob == "Very satisfied" | satjob == "Moderately satisfied" | satjob == "A little dissatisfied" | satjob == "Very dissatisfied")
