@@ -204,7 +204,7 @@ gif1 <- gss_satjob_perc %>%
            scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f"))
 
 
-animate(gif1, renderer = gifski_renderer(), fps = 60 , height = 1080, width =1920)
+animate(gif1, renderer = gifski_renderer(), fps = 60 , height = 1080, width =1920, duration = 3)
 anim_save("gif1.gif")
 
 ```
