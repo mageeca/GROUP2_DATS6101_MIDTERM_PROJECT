@@ -14,11 +14,10 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-#uploading packages
+#loading all relevant packages
 library(ezids)
 library(dplyr)
 library(ggplot2)
-#library(DataExplorer)
 library(plotly)
 library(ggeasy)
 library(ggpubr)
@@ -31,14 +30,18 @@ library(gridExtra)
 library(grid)
 library(gridExtra)
 library(cowplot)
-
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
-gss1 <- data.frame(read.csv("/Users/carriemagee/Desktop/GROUP2_DATS6101_MIDTERM_PROJECT/GSS.csv"))
-#cleaning data
+gss1 <- data.frame(read.csv("GSS.csv"))
+# Origially the data has labels/ values like inapplicable, no answer etc. We only need rows that have complete and specific rows. 
+# To remove those rows we perform data cleaning
+# Cleaning data 
+# We begin my making subset of the original dataframe where we only keep the 3 variables of happy that we actually need.
 gss1_h = subset(gss1, happy == "Very happy" | happy == "Pretty happy" | happy == "Not too happy")
+# Then we make the subset of the above dataframe and keep only the 4 labels of job satisfaction. This process is followed for all other variables as well.
 gss1_hsj = subset(gss1_h, satjob == "Very satisfied" | satjob == "Moderately satisfied" | satjob == "A little dissatisfied" | satjob == "Very dissatisfied")
 gss1_hsjc = subset(gss1_hsj, class_ == "Lower class" | class_ == "Working class" | class_ == "Middle class" | class_ == "Upper class")
 gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "More or less satisfied" | satfin == "Not satisfied at all")
+# We ultimately have the final dataframe that consists of the labels that are valid for us. We originally had 68846 rows but after cleaning we are left with 47251 rows. 
 ```
 
 
@@ -53,60 +56,61 @@ gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "M
 
 ## Descriptive Statistics
 
+We get the structure of our dataset to get a small insight into it. we can not get the necessary information by using summary beacuse our whole data is categorical.
 ```{r}
 #getting structure of data set since data is categorical and cannot get information by using summary
 str(gss1_hsjcsf)
 ```
 
-
+### Pie Charts
 ```{r}
-par(mfrow=c(1,4))
+par(mfrow=c(1,4)) 
+# Piechart for showing different percentages of level of happiness in the dataset
 pie_happy <- gss1_hsjcsf %>% count(happy) %>%
-  arrange(desc(happy)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
-
+             arrange(desc(happy)) %>% 
+             mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages) # ypos is calculated because it gives us the center of the angle thus helping us to place the % right in the middle of the slice.
+# Piechart for showing different percentages of social class in the dataset
 pie_class <- gss1_hsjcsf %>% count(class_) %>%
-  arrange(desc(class_)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
-
+             arrange(desc(class_)) %>% 
+             mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages)
+# Piechart for showing different percentages level of financial satisfaction in the dataset
 pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
-  arrange(desc(satfin)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
-
+              arrange(desc(satfin)) %>% 
+              mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages)
+# Piechart for showing different percentages of job satisfaction in the dataset
 pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
-  arrange(desc(satjob)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
-
-plot1<-ggplot(pie_happy, aes(x="", y=percentages, fill=happy)) +
-geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)+
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+labs(title = "Happiness Variable",fill = "Happiness")+theme(plot.title = element_text(face="bold",hjust = 0.5))
-
-plot2<-ggplot(pie_class, aes(x="", y=percentages, fill=class_)) +
-geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)+
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+labs(title = "Social Class Variable",fill = "Class")+theme(plot.title = element_text(face="bold",hjust = 0.5))
-
-plot3<-ggplot(pie_satfin, aes(x="", y=percentages, fill=satfin)) +
-geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)+
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+labs(title = "Financial Satisfaction Variable",fill = "Financial Satisfaction")+theme(plot.title = element_text(face="bold",hjust = 0.2))
-
-plot4<-ggplot(pie_satjob, aes(x="", y=percentages, fill=satjob)) +
-geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)+
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+labs(title = "Job Satisfaction Variable",fill = "Job Satisfaction")+theme(plot.title = element_text(face="bold",hjust = 0.4))
-
-plot_grid(plot1, plot2, plot3, plot4, align = "h", axis = "b", rel_widths = c(10, 10))
-#grid.arrange(plot1, plot2, plot3, plot4, ncol=3)
+              arrange(desc(satjob)) %>% 
+              mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages)
+plot1 <- ggplot(pie_happy, aes(x = "", y=percentages, fill = happy)) +
+         geom_bar(stat="identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Happiness Variable", fill = "Happiness") +  
+         theme(plot.title = element_text(face = "bold", hjust = 0.5))
+plot2 <- ggplot(pie_class, aes(x = "", y = percentages, fill = class_)) +
+         geom_bar(stat = "identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Social Class Variable", fill = "Class") + 
+         theme(plot.title = element_text(face = "bold", hjust = 0.5))
+plot3 <- ggplot(pie_satfin, aes(x = "", y = percentages, fill = satfin)) +
+         geom_bar(stat = "identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Financial Satisfaction Variable", fill = "Financial Satisfaction") + 
+         theme(plot.title = element_text(face = "bold", hjust = 0.2))
+plot4 <- ggplot(pie_satjob, aes(x = "", y = percentages, fill = satjob)) +
+         geom_bar(stat = "identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Job Satisfaction Variable", fill = "Job Satisfaction") + 
+         theme(plot.title = element_text(face = "bold", hjust = 0.5))
+plot_grid(plot1, plot2, plot3, plot4, align = "h", axis = "b", rel_widths = c(20, 20))
+# We use the plot_grid function to plot the 4 pie charts in a 2x2 grid
 ```
 
 The first pie chart shows that more than half of the people are pretty happy (57%) whereas the individuals who report being very happy and not too happy make up 31% and 12% of the sample respectively.
@@ -119,13 +123,14 @@ The last pie chart shows about 48% of the sample are very satisfied with their j
 
 ## Chi Squared Analysis
 ```{r}
-sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col =gss1_hsjcsf$satfin, title = "Level of Happiness by Financial Satisfaction Crosstabulation",var.labels = c("Happiness Level","Financial Satisfaction"), show.row.prc = TRUE,emph.total = TRUE)
+# with sjPlot we can plot a simple Chi-Squared distribution that indicate at what p-level is.
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col = gss1_hsjcsf$satfin, title = "Level of Happiness by Financial Satisfaction Crosstabulation", var.labels = c("Happiness Level", "Financial Satisfaction"), show.row.prc = TRUE, emph.total = TRUE)
 ```
 
 The cross tabulation above shows the frequency of happiness levels by financial satisfaction. We wanted to further examine the relationship between financial satisfaction and happiness in order to see how feelings of financial satisfaction can potentially influence how happy an individual feels in life.  According to the chi-squared test of independence, there is a significant relationship between happiness and financial satisfaction (p<0.05). This means that an individual's level of happiness depends on their feelings of satisfaction with their current financial situation. More specifically, the table shows that a majority of individuals (54.5%) that report being not at all satisfied with their financial situation were not too happy in life. In addition, almost 49% of people that reported being more or less satisfied with their financial situation were pretty happy with their life while about 42% of individuals that were pretty well satisfied with their financial situation reported being very happy in life. The results clearly imply that the more financially satisfied an individual is, the happier they are in life. 
 
 ```{r fig.height = 8, fig.width = 13}
-sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col = gss1_hsjcsf$satjob,title = "Level of Happiness by Job Satisfaction Crosstabulation",var.labels = c("Happiness Level","Job Satisfaction"), show.row.prc = TRUE,emph.total = TRUE)
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col = gss1_hsjcsf$satjob, title = "Level of Happiness by Job Satisfaction Crosstabulation", var.labels = c("Happiness Level","Job Satisfaction"), show.row.prc = TRUE, emph.total = TRUE)
 ```
 
 The cross tabulation above shows the frequency of happiness levels by job satisfaction. We wanted to further examine the relationship between job satisfaction and happiness in order to see how job satisfaction can potentially influence how happy an individual feels in life. According to the chi-squared test of independence, there is a significant relationship between job satisfaction and happiness (p<0.05). This means that an individual's level of happiness depends on their satisfaction with their current job. The table shows that a majority of individuals that reported being very dissatisfied (12.2%) or a little dissatisfied (19.8%) with their jobs were not too happy in their lives. About 44% of people that were moderately satisfied with their jobs reported being pretty happy in life while 65.9% of people who were very satisfied with their jobs reported being very happy in life. Considering that individuals who reported being more dissatisfied with job also reported being unhappy and those who reported being more satisfied were more happy shows  that job satisfaction may play a crucial role in how happy individuals are in life. 
@@ -134,14 +139,15 @@ The cross tabulation above shows the frequency of happiness levels by job satisf
 
 ### Financial Satisfaction and Happiness by Social Class
 ```{r fig.height = 7, fig.width = 12}
-# making plot of relationship between class and financial satisfaction
-ggplot(gss1_hsjcsf, aes(x=satfin, fill=happy)) +
-  geom_bar(position = "dodge")+
-  facet_wrap(~class_)  +
-  labs(title="Relationship Between Financial Satisfaction and Happiness Levels by Social Class",x="Financial Satisfaction", y = "Frequency",fill="Happiness")+
-  theme_bw(base_size=14)+theme(plot.title = element_text(face="bold",hjust = 0.5),axis.text.x = element_text(angle=30, vjust = 1, hjust = 1))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+scale_x_discrete(limits = c("  Not satisfied at all","More or less satisfied","Pretty well satisfied"))
-
+# Making plot of relationship between class and financial satisfaction
+ggplot(gss1_hsjcsf, aes(x = satfin, fill = happy)) +
+       geom_bar(position = "dodge") +
+       facet_wrap(~class_)  +
+       labs(title = "Relationship Between Financial Satisfaction and Happiness Levels by Social Class", x = "Financial Satisfaction", y = "Frequency", fill = "Happiness") +
+       theme_bw(base_size = 14) + 
+       theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
+       scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+       scale_x_discrete(limits = c("Not satisfied at all", "More or less satisfied", "Pretty well satisfied"))
 ```
 
 This figure illustrates the relationship between individuals' financial satisfaction and general happiness by social class. For context, there is also a disproportionate number of individuals in the middle and working class groups in comparison to the lower and upper class individuals. For lower, working, and middle class groups, a majority of individuals were more or less satisfied with their financial situation and reported feeling pretty happy in their life. It is important to note that there is a similar trend in the middle class group for both job satisfaction and financial satisfaction in relation to happiness. Middle class individuals that are highly satisfied with their job or financial situation were equally high in both the pretty happy and very happy responses.For upper class individuals, a large number were pretty well satisfied with their financial situation and reported being very happy in life. As we can see, the results show that the higher the social class the more you become satisfied with your financial situation and the more you report being very happy while the more you go down in class, the more your satisfaction and happiness become average (as in more or less satisfied and pretty happy).
@@ -149,13 +155,14 @@ This figure illustrates the relationship between individuals' financial satisfac
 ### Job Satisfaction and Happiness by Social Class
 ```{r fig.height = 7, fig.width = 12}
 # making plot of relationship between class and job satisfaction
-ggplot(gss1_hsjcsf, aes(x=satjob, fill=happy)) +
-  geom_bar(position = "dodge")+
-  facet_wrap(~class_)  +
-  labs(title="Relationship Between Job Satisfaction and Happiness Levels by Social Class",x="Job Satisfaction", y = "Frequency",fill="Happiness")+
-  theme_bw(base_size = 14)+theme(plot.title = element_text(face="bold",hjust = 0.5),axis.text.x = element_text(angle=30, vjust = 1, hjust = 1))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+scale_x_discrete(limits = c("Very dissatisfied","A little dissatisfied", "Moderately satisfied","Very satisfied"))
-
+ggplot(gss1_hsjcsf, aes(x = satjob, fill = happy)) +
+       geom_bar(position = "dodge") +
+       facet_wrap(~class_)  +
+       labs(title = "Relationship Between Job Satisfaction and Happiness Levels by Social Class", x = "Job Satisfaction", y = "Frequency", fill = "Happiness") +
+       theme_bw(base_size = 14) + 
+       theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
+       scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+       scale_x_discrete(limits = c("Very dissatisfied", "A little dissatisfied", "Moderately satisfied","Very satisfied"))
 ```
 
 The figure above looks at the relationship between individuals' job satisfaction and general happiness by social class. For context, there is a larger number of working and middle class individuals than upper and lower class individuals. The results show that many lower class individuals were very satisfied with their job and that those same individuals were pretty happy overall. A majority of working class individuals were also very satisfied with their job and were also pretty happy. Interestingly, many middle class individuals were very satisfied with their jobs and reported being equally pretty happy and very happy in their lives. The upper class individuals were the only group that had more very happy individuals with very high job satisfaction. In other words, most individuals within the four social class groups were very satisfied with their jobs but only upper class individuals had more very happy individuals compared to pretty happy individuals. These results provide some insight into how social class may have a greater influence on individual's feelings of financial satisfaction and thus also influencing their feelings of happiness in life.  
@@ -167,56 +174,49 @@ The figure above looks at the relationship between individuals' job satisfaction
 
 We created one subset of the dataframe by adding a column of percentage value of every possible combination of happiness, year, and job satisfaction. Similarly, we created another subset that showed the percentage value of every possible combination of happiness, year, and financial satisfaction.
 
+
 ```{r fig.height = 7, fig.width = 10}
-
-# Calculations prior to plotting happiness levels compared to the job satisfaction over the course of 50 Years.
-
+# Calculations prior to plotting happiness levels compared to the job satisfaction from 1972 - 2018.
 gss_satjob <- gss1_hsjcsf %>% 
-  group_by(year, happy, satjob) %>% 
-  summarise(total_count=n(),
-            .groups = 'drop') %>% 
-  as.data.frame()
-
+              group_by(year, happy, satjob) %>% 
+              summarise(total_count=n(), .groups = 'drop') %>% 
+              as.data.frame()
 gss_satjob_perc <- transform(gss_satjob,
                              perc = ave(total_count,
                                         year,
                                         FUN = prop.table))
-
 gss_satjob_perc$perc = gss_satjob_perc$perc * 100
-
-# Plot to analyze happiness levels compared to the job satisfaction over the course of 50 Years.
-
+# Plot to analyze happiness levels compared to the job satisfaction from 1972 - 2018.
 ggplotly(gss_satjob_perc %>%
-           ggplot( aes(x=year, y=perc)) +
+           ggplot( aes(x = year, y = perc)) +
            geom_line(aes(colour=happy)) +
-           geom_point(size=0.5)+
-           xlab("Years")+
-           ylab("Percentage Happiness")+
-           labs(title="Job Satisfaction Levels")+
-           theme(plot.title=element_text(hjust=0.5, size = 10))+
-           facet_wrap(. ~ satjob, nrow = 4)+
-           guides(color = guide_legend(title = "Happiness Type"))+
-           transition_reveal(year)+
-           scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f")))
-
+           geom_point(size = 0.5) +
+           xlab("Years") +
+           ylab("Percentage Happiness") +
+           labs(title = "Job Satisfaction Levels") +
+           theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+           facet_wrap(. ~ satjob, nrow = 4) +
+           guides(color = guide_legend(title = "Happiness Type")) +
+           transition_reveal(year) +
+           scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f")))
 
 gif1 <- gss_satjob_perc %>%
-           ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=happy)) +
-           geom_point(size=0.5)+
-           xlab("Years")+
-           ylab("Percentage Happiness")+
-           labs(title="Job Satisfaction Levels")+
-           theme(plot.title=element_text(hjust=0.5, size = 10))+
-           facet_wrap(. ~ satjob, nrow = 4)+
-           guides(color = guide_legend(title = "Happiness Type"))+
-           transition_reveal(year)+
-           scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f"))
+        ggplot(aes(x = year, y = perc)) +
+        geom_line(aes(colour = happy)) +
+        geom_point(size = 0.5) +
+        xlab("Years") +
+        ylab("Percentage Happiness") +
+        labs(title = "Job Satisfaction Levels") +
+        theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+        facet_wrap(. ~ satjob, nrow = 4) +
+        guides(color = guide_legend(title = "Happiness Type"))+
+        transition_reveal(year) +
+        scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f"))
 
-
+# We use the animate function to make an animation that shows differences over the years from 1972 - 2018
 #animate(gif1, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
+# We save the animation into a gif.
 #anim_save("gif1.gif")
-
 ```
 
 The graph tells us a story of how job satisfaction relates to the level of happiness, over time, of the surveyed individuals, with time being on the x-axis, the percentage of happiness on the y-axis (with its subcategory description in the legends that are right aligned), and the job satisfaction in a matrix of panels where each panel represents one subcategory of job satisfaction. It is visible that a little amount of discomfort is imminent in human lives, which is exactly what the data tells us when we see that there is a small group of people who are a little dissatisfied with their job and they seem to have a moderate happiness level too. This moderate happiness value hits its peak in 1980, 1984, 1987, and 1993 but never crosses the 10 percent happiness mark.
@@ -231,56 +231,49 @@ For the people who are very satisfied with their jobs, the percentage happiness 
 ### Happiness and Financial Satisfaction Over Time
 
 ```{r fig.height = 7, fig.width = 10}
-
-# Calculations prior to plotting happiness levels compared to the financial satisfaction over the course of 50 Years.
-
+# Calculations prior to plotting happiness levels compared to the financial satisfaction from 1972 - 2018.
 gss_satfin <- gss1_hsjcsf %>% 
-  group_by(year, happy, satfin) %>% 
-  summarise(total_count=n(),
-            .groups = 'drop') %>% 
-  as.data.frame()
-
+              group_by(year, happy, satfin) %>% 
+              summarise(total_count=n(), .groups = 'drop') %>% 
+              as.data.frame()
 gss_satfin_perc <- transform(gss_satfin,
                              perc = ave(total_count,
                                         year,
                                         FUN = prop.table))
-
 gss_satfin_perc$perc = gss_satfin_perc$perc * 100
-
-# Plot to analyze happiness levels compared to the financial satisfaction over the course of 50 Years.
-
+# Plot to analyze happiness levels compared to the financial satisfaction from 1972 - 2018.
 ggplotly(gss_satfin_perc %>%
-           ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=happy)) +
-           geom_point(size=0.5)+
-           facet_wrap(. ~ satfin, nrow = 3)+
-           xlab("Years")+
-           ylab("Percentage Happiness ")+
-           labs(title="Financial Satisfaction Levels ")+
-           theme(plot.title=element_text(hjust=0.5, size = 10))+
-           facet_wrap(. ~ satfin, nrow = 3)+
-           guides(color = guide_legend(title = "Happiness Type"))+
-           transition_reveal(year)+
-           scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f")))
-
-gif2<-gss_satfin_perc %>%
-  ggplot( aes(x=year, y=perc)) +
-  geom_line(aes(colour=happy)) +
-  geom_point(size=0.5)+
-  facet_wrap(. ~ satfin, nrow = 3)+
-  xlab("Years")+
-  ylab("Percentage Happiness ")+
-  labs(title="Financial Satisfaction Levels ")+
-  theme(plot.title=element_text(hjust=0.5, size = 10))+
-  facet_wrap(. ~ satfin, nrow = 3)+
-  guides(color = guide_legend(title = "Happiness Type"))+
-  transition_reveal(year)+
-  scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f"))
-
-
+           ggplot( aes(x = year, y = perc)) +
+           geom_line(aes(colour = happy)) +
+           geom_point(size = 0.5) +
+           facet_wrap(. ~ satfin, nrow = 3) +
+           xlab("Years") +
+           ylab("Percentage Happiness ") +
+           labs(title="Financial Satisfaction Levels ") +
+           theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+           facet_wrap(. ~ satfin, nrow = 3) +
+           guides(color = guide_legend(title = "Happiness Type")) +
+           transition_reveal(year) +
+           scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f")))
+# We save the plot into a variable gif to make an animation.
+gif2 <- gss_satfin_perc %>%
+        ggplot(aes(x = year, y = perc)) +
+        geom_line(aes(colour = happy)) +
+        geom_point(size = 0.5) +
+        facet_wrap(. ~ satfin, nrow = 3) +
+        xlab("Years") +
+        ylab("Percentage Happiness") +
+        labs(title = "Financial Satisfaction Levels") +
+        theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+        facet_wrap(. ~ satfin, nrow = 3) +
+        guides(color = guide_legend(title = "Happiness Type")) +
+        transition_reveal(year) +
+        scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f"))
+ 
+# We use the animate function to make an animation that shows differences over the years from 1972 - 2018
 #animate(gif2, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
+# We save the animation into a gif.
 #anim_save("gif2.gif")
-
 ```
 
 This plot illustrates the relationship between financial satisfaction and level of happiness over time for the surveyed individuals, with time on the x-axis, percentage happiness on the y-axis (with its subcategory description in the legends that are right aligned), and financial satisfaction in a matrix of panels where each panel represents one subcategory of financial satisfaction. It is visible that when we stack up a big picture metric of financial satisfaction against job satisfaction and we look at people who are more or less satisfied with their financial status, we find that there are a significant percentage of people who are moderately happy and even very happy, which is directly proportional to them being partially satisfied, with the not too happy percentage being on the low side. The pretty-happy values hit major bottoms twice, in 1974 and 2008, and major peaks in 1987, 1991, and 1994, while fluctuating otherwise. After COVID-19 in 2020 and the additively negative effects of inflation, the not-too-happy value suddenly goes up, bringing down the very-happy percentage equally dramatically with it. Also, we see that in this category, the moderately happy percentage value goes up, discarding the general trend from 2018 to 2021 in this category, which can be backed up by the fact that these people are generally in the middle class or small business category, and COVID-19 gave them a huge opportunity to be profitable from their small or local businesses while all the big firms were shut down.
