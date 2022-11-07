@@ -153,13 +153,17 @@ The cross tabulation above shows the frequency of happiness levels by job satisf
 
 ### Financial Satisfaction and Happiness by Social Class
 ```{r fig.height = 7, fig.width = 12}
-# making plot of relationship between class and financial satisfaction
-ggplot(gss1_hsjcsf, aes(x=satfin, fill=happy)) +
-  geom_bar(position = "dodge")+
-  facet_wrap(~class_)  +
-  labs(title="Relationship Between Financial Satisfaction and Happiness Levels by Social Class",x="Financial Satisfaction", y = "Frequency",fill="Happiness")+
-  theme_bw(base_size=14)+theme(plot.title = element_text(face="bold",hjust = 0.5),axis.text.x = element_text(angle=30, vjust = 1, hjust = 1))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+scale_x_discrete(limits = c("  Not satisfied at all","More or less satisfied","Pretty well satisfied"))
+
+# Making plot of relationship between class and financial satisfaction
+
+ggplot(gss1_hsjcsf, aes(x = satfin, fill = happy)) +
+       geom_bar(position = "dodge") +
+       facet_wrap(~class_)  +
+       labs(title = "Relationship Between Financial Satisfaction and Happiness Levels by Social Class", x = "Financial Satisfaction", y = "Frequency", fill = "Happiness") +
+       theme_bw(base_size = 14) + 
+       theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
+       scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+       scale_x_discrete(limits = c("Not satisfied at all", "More or less satisfied", "Pretty well satisfied"))
 
 ```
 
