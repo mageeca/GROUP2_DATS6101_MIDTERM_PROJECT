@@ -285,3 +285,12 @@ If we move on to the last part of our graph, we find both happiness values highe
 
 
 ## Conclusion
+
+When we look at the combined data for all the years, We can say that 88% of the people are happy, and 12% are not too happy. We see that nearly 50% of the people belong to the working class, and almost 43% belong to the Middle Class. About 2/3rd of the people are satisfied with their financial situation, or we can say that 27.42% are not satisfied with their financial situation.
+We got a better view from the chi-square analysis when comparing happiness against financial satisfaction. Most people who are very happy (~90%) are satisfied with their job. But we observe that happy people also decrease as the number of unsatisfied people increases.
+A similar trend was observed for happiness against job satisfaction. We can see that very happy and satisfied people are about 66% of the data. We can see that as dissatisfaction increases, the number of happy decreases.
+We can also see that the higher in class you go, the more satisfied and happy you are. The lower and working classes differ from the middle and upper classes regarding job satisfaction and happiness. However, the upper class shows this extremely positive trend in happiness and job satisfaction, where most individuals are very happy. In contrast, so class may be a significant influence on the happiness level.
+
+In the time series analysis, over the years, we see that more than 40% of people are happy and satisfied financially. People who are pretty well satisfied financially and not too happy barely makeup 2% of the people.
+
+Overall, happiness is related to job and financial satisfaction. The more financially satisfied you are, the happier you are. In addition, the more satisfied you are with your job, the happier you are.One might believe that money can not buy you happiness, but the data points out that money, along with a fulfilling job and financial freedom, has the potential to provide happiness. Job fulfillment and financial security can make our life easier and more comfortable. It allows us to fulfill our needs and wants. In the future, we can also observe a similar relationship between job and financial satisfaction with the stress levels of individuals. It will be interesting to find connections with other similar variables. In the future, after gathering more data, we can also observe the short-term and long-term impact on individuals due to covid and how long it took for the numbers to return to pre covid time.
