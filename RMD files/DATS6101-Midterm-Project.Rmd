@@ -41,8 +41,12 @@ INSERT COMMENTARY HERE
 
 ### Descriptive Statistics (frequency distribution and mode)
 ```{r}
+<<<<<<< Updated upstream
 library(grid)
 library(gridExtra)
+library(cowplot)
+par(mfrow=c(1,4))
+=======
 library(cowplot)
 par(mfrow=c(1,4))
 pie_happy <- gss1_hsjcsf %>% count(happy) %>%
@@ -86,8 +90,106 @@ coord_polar("y", start=0)+
   geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
 
 plot_grid(plot1, plot2, plot3, plot4, align = "h", axis = "b", rel_widths = c(1, 1))
+```
+
+The first pie chart shows the more than half of the people are pretty happy(i.e 57%) from 1972 to 2021 whereas the american's people who are very happy and not too happy are 31% and 12% respectively.
+ The second  pie chart shows the classes of people of America. It show that nearly half of the people fall under working class and about 43% people are middle class in America. The american's people who fall under upper and lower class are very less than other two classes i.e 3% and 5.1%.
+ 
+The third pie chart shows  that nearly half of the people are more or less satisfied with their financial status i.e 46% approximately whereas about same percentage (about 27%) of people are pretty well satisfied and Not satisfied at all with their Financial status.
+
+The last pie chart shows about 48% of american people's are very satisfied with their job whereas a little people are dissatisfied with their job i.e 4.1%. The percentage of people who are a little dissatisfied and moderately satisfied are  10% and 38.2% respectively.
+
+```{r}
+# Pie Chart for Happy
+>>>>>>> Stashed changes
+pie_happy <- gss1_hsjcsf %>% count(happy) %>%
+  arrange(desc(happy)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+<<<<<<< Updated upstream
+=======
+ggplot(data= pie_happy)+
+  geom_col(mapping = aes(x="", y=percentages, fill=happy)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+```
+
+
+The Pie chart shows the more than half of the people are pretty happy from 1972 to 2021.
+
+
+```{r}
+# Pie Chart for class
+>>>>>>> Stashed changes
+pie_class <- gss1_hsjcsf %>% count(class_) %>%
+  arrange(desc(class_)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+<<<<<<< Updated upstream
+=======
+ggplot(data= pie_class)+
+  geom_col(mapping = aes(x="", y=percentages, fill=class_)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+```
+
+ A pie chart shows the classes of people of America. It show that nearly half of the people fall under working class and about 43% people are middle class in America.
+ 
+ 
+```{r}
+# Pie Chart for Financial Satisfaction
+>>>>>>> Stashed changes
+pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
+  arrange(desc(satfin)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+<<<<<<< Updated upstream
+=======
+ggplot(data= pie_satfin)+
+  geom_col(mapping = aes(x="", y=percentages, fill=satfin)) +
+  coord_polar(theta = "y") +
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+```
+
+It shows that nearly half of the people are more or less satisfied with their financial status whereas about same percentage of people are pretty well satisfied and Not satisfied at all with their Financial.
+
+
+```{r}
+# Pie Chart for Job Satisfaction
+>>>>>>> Stashed changes
+pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
+  arrange(desc(satjob)) %>% 
+  mutate(percentages=n/sum(n) * 100, 
+         ypos = cumsum(percentages)- 0.5*percentages )
+
+plot1<-ggplot(pie_happy, aes(x="", y=percentages, fill=happy)) +
+geom_bar(stat="identity", width=1) + 
+coord_polar("y", start=0)+
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+
+plot2<-ggplot(pie_class, aes(x="", y=percentages, fill=class_)) +
+geom_bar(stat="identity", width=1) + 
+coord_polar("y", start=0)+
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+
+plot3<-ggplot(pie_satfin, aes(x="", y=percentages, fill=satfin)) +
+geom_bar(stat="identity", width=1) + 
+coord_polar("y", start=0)+
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+
+plot4<-ggplot(pie_satjob, aes(x="", y=percentages, fill=satjob)) +
+geom_bar(stat="identity", width=1) + 
+coord_polar("y", start=0)+
+  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))
+
+plot_grid(plot1, plot2, plot3, plot4, align = "h", axis = "b", rel_widths = c(1, 1))
 #grid.arrange(plot1, plot2, plot3, plot4, ncol=3)
 ```
+The figure shows about 48% of american people's are very satisfied with their job whereas a little people are dissatisfied with their job.
+
 
 The first pie chart shows the more than half of the people are pretty happy(i.e 57%) from 1972 to 2021 whereas the american's people who are very happy and not too happy are 31% and 12% respectively.
  The second  pie chart shows the classes of people of America. It show that nearly half of the people fall under working class and about 43% people are middle class in America. The american's people who fall under upper and lower class are very less than other two classes i.e 3% and 5.1%.
