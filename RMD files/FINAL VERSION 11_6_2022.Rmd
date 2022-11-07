@@ -259,13 +259,12 @@ For the people who are very satisfied with their jobs, the percentage happiness 
 
 ```{r fig.height = 7, fig.width = 10}
 
-# Calculations prior to plotting happiness levels compared to the financial satisfaction over the course of 50 Years.
+# Calculations prior to plotting happiness levels compared to the financial satisfaction from 1972 - 2018.
 
 gss_satfin <- gss1_hsjcsf %>% 
-  group_by(year, happy, satfin) %>% 
-  summarise(total_count=n(),
-            .groups = 'drop') %>% 
-  as.data.frame()
+              group_by(year, happy, satfin) %>% 
+              summarise(total_count=n(), .groups = 'drop') %>% 
+              as.data.frame()
 
 gss_satfin_perc <- transform(gss_satfin,
                              perc = ave(total_count,
@@ -274,38 +273,41 @@ gss_satfin_perc <- transform(gss_satfin,
 
 gss_satfin_perc$perc = gss_satfin_perc$perc * 100
 
-# Plot to analyze happiness levels compared to the financial satisfaction over the course of 50 Years.
+# Plot to analyze happiness levels compared to the financial satisfaction from 1972 - 2018.
 
 ggplotly(gss_satfin_perc %>%
-           ggplot( aes(x=year, y=perc)) +
-           geom_line(aes(colour=happy)) +
-           geom_point(size=0.5)+
-           facet_wrap(. ~ satfin, nrow = 3)+
-           xlab("Years")+
-           ylab("Percentage Happiness ")+
-           labs(title="Financial Satisfaction Levels ")+
-           theme(plot.title=element_text(hjust=0.5, size = 10))+
-           facet_wrap(. ~ satfin, nrow = 3)+
-           guides(color = guide_legend(title = "Happiness Type"))+
-           transition_reveal(year)+
-           scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f")))
+           ggplot( aes(x = year, y = perc)) +
+           geom_line(aes(colour = happy)) +
+           geom_point(size = 0.5) +
+           facet_wrap(. ~ satfin, nrow = 3) +
+           xlab("Years") +
+           ylab("Percentage Happiness ") +
+           labs(title="Financial Satisfaction Levels ") +
+           theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+           facet_wrap(. ~ satfin, nrow = 3) +
+           guides(color = guide_legend(title = "Happiness Type")) +
+           transition_reveal(year) +
+           scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f")))
 
-gif2<-gss_satfin_perc %>%
-  ggplot( aes(x=year, y=perc)) +
-  geom_line(aes(colour=happy)) +
-  geom_point(size=0.5)+
-  facet_wrap(. ~ satfin, nrow = 3)+
-  xlab("Years")+
-  ylab("Percentage Happiness ")+
-  labs(title="Financial Satisfaction Levels ")+
-  theme(plot.title=element_text(hjust=0.5, size = 10))+
-  facet_wrap(. ~ satfin, nrow = 3)+
-  guides(color = guide_legend(title = "Happiness Type"))+
-  transition_reveal(year)+
-  scale_color_manual(values=c("#0290d1", "#e88738", "#39db7f"))
+# We save the plot into a variable gif to make an animation.
+# gif2 <- gss_satfin_perc %>%
+#         ggplot(aes(x = year, y = perc)) +
+#         geom_line(aes(colour = happy)) +
+#         geom_point(size = 0.5) +
+#         facet_wrap(. ~ satfin, nrow = 3) +
+#         xlab("Years") +
+#         ylab("Percentage Happiness") +
+#         labs(title = "Financial Satisfaction Levels") +
+#         theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+#         facet_wrap(. ~ satfin, nrow = 3) +
+#         guides(color = guide_legend(title = "Happiness Type")) +
+#         transition_reveal(year) +
+#         scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f"))
+# 
 
-
+# We use the animate function to make an animation that shows differences over the years from 1972 - 2018
 #animate(gif2, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
+# We save the animation into a gif.
 #anim_save("gif2.gif")
 
 ```
