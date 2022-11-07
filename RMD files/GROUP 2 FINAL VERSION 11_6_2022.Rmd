@@ -57,6 +57,8 @@ gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "M
 ## Descriptive Statistics
 
 We get the structure of our dataset to get a small insight into it. we can not get the necessary information by using summary beacuse our whole data is categorical.
+
+Dataset Source: https://gssdataexplorer.norc.org/home
 ```{r}
 #getting structure of data set since data is categorical and cannot get information by using summary
 str(gss1_hsjcsf)
