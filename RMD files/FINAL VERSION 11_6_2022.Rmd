@@ -132,7 +132,11 @@ The last pie chart shows about 48% of the sample are very satisfied with their j
 
 ## Chi Squared Analysis
 ```{r}
-sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col =gss1_hsjcsf$satfin, title = "Level of Happiness by Financial Satisfaction Crosstabulation",var.labels = c("Happiness Level","Financial Satisfaction"), show.row.prc = TRUE,emph.total = TRUE)
+
+# with sjPlot we can plot a simple Chi-Squared distribution that indicate at what p-level is.
+
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col = gss1_hsjcsf$satfin, title = "Level of Happiness by Financial Satisfaction Crosstabulation", var.labels = c("Happiness Level", "Financial Satisfaction"), show.row.prc = TRUE, emph.total = TRUE)
+
 ```
 
 The cross tabulation above shows the frequency of happiness levels by financial satisfaction. We wanted to further examine the relationship between financial satisfaction and happiness in order to see how feelings of financial satisfaction can potentially influence how happy an individual feels in life.  According to the chi-squared test of independence, there is a significant relationship between happiness and financial satisfaction (p<0.05). This means that an individual's level of happiness depends on their feelings of satisfaction with their current financial situation. More specifically, the table shows that a majority of individuals (54.5%) that report being not at all satisfied with their financial situation were not too happy in life. In addition, almost 49% of people that reported being more or less satisfied with their financial situation were pretty happy with their life while about 42% of individuals that were pretty well satisfied with their financial situation reported being very happy in life. The results clearly imply that the more financially satisfied an individual is, the happier they are in life. 
