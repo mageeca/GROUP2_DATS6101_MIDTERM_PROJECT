@@ -63,54 +63,64 @@ gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "M
 ## Descriptive Statistics
 
 ```{r}
-par(mfrow=c(1,4))
+par(mfrow=c(1,4)) 
+
+# Piechart for showing different percentages of level of happiness in the dataset
 pie_happy <- gss1_hsjcsf %>% count(happy) %>%
-  arrange(desc(happy)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
+             arrange(desc(happy)) %>% 
+             mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages) # ypos is calculated because it gives us the center of the angle thus helping us to place the % right in the middle of the slice.
 
+# Piechart for showing different percentages of social class in the dataset
 pie_class <- gss1_hsjcsf %>% count(class_) %>%
-  arrange(desc(class_)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
+             arrange(desc(class_)) %>% 
+             mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages)
 
+# Piechart for showing different percentages level of financial satisfaction in the dataset
 pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
-  arrange(desc(satfin)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
+              arrange(desc(satfin)) %>% 
+              mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages)
 
+# Piechart for showing different percentages of job satisfaction in the dataset
 pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
-  arrange(desc(satjob)) %>% 
-  mutate(percentages=n/sum(n) * 100, 
-         ypos = cumsum(percentages)- 0.5*percentages )
+              arrange(desc(satjob)) %>% 
+              mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages)
 
-plot1<-ggplot(pie_happy, aes(x="", y=percentages, fill=happy)) +
-geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)+
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+labs(title = "Happiness Variable",fill = "Happiness")+theme(plot.title = element_text(face="bold",hjust = 0.5))
 
-plot2<-ggplot(pie_class, aes(x="", y=percentages, fill=class_)) +
-geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)+
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+labs(title = "Social Class Variable",fill = "Class")+theme(plot.title = element_text(face="bold",hjust = 0.5))
+plot1 <- ggplot(pie_happy, aes(x = "", y=percentages, fill = happy)) +
+         geom_bar(stat="identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Happiness Variable", fill = "Happiness") +  
+         theme(plot.title = element_text(face = "bold", hjust = 0.5))
 
-plot3<-ggplot(pie_satfin, aes(x="", y=percentages, fill=satfin)) +
-geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)+
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+labs(title = "Financial Satisfaction Variable",fill = "Financial Satisfaction")+theme(plot.title = element_text(face="bold",hjust = 0.2))
+plot2 <- ggplot(pie_class, aes(x = "", y = percentages, fill = class_)) +
+         geom_bar(stat = "identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Social Class Variable", fill = "Class") + 
+         theme(plot.title = element_text(face = "bold", hjust = 0.5))
 
-plot4<-ggplot(pie_satjob, aes(x="", y=percentages, fill=satjob)) +
-geom_bar(stat="identity", width=1) + 
-coord_polar("y", start=0)+
-  geom_text(aes(x="", y = ypos, label = scales::percent(percentages, scale = 1)))+
-  scale_fill_manual(values=c("#0290d1", "#e88738", "#39db7f", "#7f2bed"))+labs(title = "Job Satisfaction Variable",fill = "Job Satisfaction")+theme(plot.title = element_text(face="bold",hjust = 0.4))
+plot3 <- ggplot(pie_satfin, aes(x = "", y = percentages, fill = satfin)) +
+         geom_bar(stat = "identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Financial Satisfaction Variable", fill = "Financial Satisfaction") + 
+         theme(plot.title = element_text(face = "bold", hjust = 0.2))
 
-plot_grid(plot1, plot2, plot3, plot4, align = "h", axis = "b", rel_widths = c(10, 10))
-#grid.arrange(plot1, plot2, plot3, plot4, ncol=3)
-```
+plot4 <- ggplot(pie_satjob, aes(x = "", y = percentages, fill = satjob)) +
+         geom_bar(stat = "identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Job Satisfaction Variable", fill = "Job Satisfaction") + 
+         theme(plot.title = element_text(face = "bold", hjust = 0.5))
+
+plot_grid(plot1, plot2, plot3, plot4, align = "h", axis = "b", rel_widths = c(20, 20))
+# We use the plot_grid function to plot the 4 pie charts in a 2x2 grid
+
 
 The first pie chart shows that more than half of the people are pretty happy (57%) whereas the individuals who report being very happy and not too happy make up 31% and 12% of the sample respectively.
 
