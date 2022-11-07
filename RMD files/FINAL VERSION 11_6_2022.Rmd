@@ -120,7 +120,7 @@ plot4 <- ggplot(pie_satjob, aes(x = "", y = percentages, fill = satjob)) +
 
 plot_grid(plot1, plot2, plot3, plot4, align = "h", axis = "b", rel_widths = c(20, 20))
 # We use the plot_grid function to plot the 4 pie charts in a 2x2 grid
-
+```
 
 The first pie chart shows that more than half of the people are pretty happy (57%) whereas the individuals who report being very happy and not too happy make up 31% and 12% of the sample respectively.
 
