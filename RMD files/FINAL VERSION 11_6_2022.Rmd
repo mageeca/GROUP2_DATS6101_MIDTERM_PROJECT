@@ -14,11 +14,10 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-#uploading packages
+#loading all relevant packages
 library(ezids)
 library(dplyr)
 library(ggplot2)
-#library(DataExplorer)
 library(plotly)
 library(ggeasy)
 library(ggpubr)
@@ -33,12 +32,22 @@ library(gridExtra)
 library(cowplot)
 
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
-gss1 <- data.frame(read.csv("../GSS.csv"))
-#cleaning data
+gss1 <- data.frame(read.csv("GSS.csv"))
+
+# Origially the data has labels/ values like inapplicable, no answer etc. We only need rows that have complete and specific rows. 
+# To remove those rows we perform data cleaning
+# Cleaning data 
+# We begin my making subset of the original dataframe where we only keep the 3 variables of happy that we actually need.
+
 gss1_h = subset(gss1, happy == "Very happy" | happy == "Pretty happy" | happy == "Not too happy")
+
+# Then we make the subset of the above dataframe and keep only the 4 labels of job satisfaction. This process is followed for all other variables as well.
+
 gss1_hsj = subset(gss1_h, satjob == "Very satisfied" | satjob == "Moderately satisfied" | satjob == "A little dissatisfied" | satjob == "Very dissatisfied")
 gss1_hsjc = subset(gss1_hsj, class_ == "Lower class" | class_ == "Working class" | class_ == "Middle class" | class_ == "Upper class")
 gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "More or less satisfied" | satfin == "Not satisfied at all")
+# We ultimately have the final dataframe that consists of the labels that are valid for us. We originally had 68846 rows but after cleaning we are left with 47251 rows. 
+
 ```
 
 
