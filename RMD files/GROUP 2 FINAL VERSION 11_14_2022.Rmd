@@ -1,0 +1,343 @@
+---
+title: "The Relationship between Financial and Job Satisfaction and Levels of Happiness Among Different Social Classes "
+author: "Carrie Magee, Abhimanyu Barun, Ambar Pathak, and Kismat Khatri"
+output:
+  html_document:
+    code_folding: hide
+    number_sections: false
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+#loading all relevant packages
+library(ezids)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(ggeasy)
+library(ggpubr)
+library(gganimate)
+library(gifski)
+library(transformr)
+library(scales)
+library(grid)
+library(gridExtra)
+library(grid)
+library(gridExtra)
+library(cowplot)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+gss1 <- data.frame(read.csv("GSS.csv"))
+# Origially the data has labels/ values like inapplicable, no answer etc. We only need rows that have complete and specific rows. 
+# To remove those rows we perform data cleaning
+# Cleaning data 
+# We begin my making subset of the original dataframe where we only keep the 3 variables of happy that we actually need.
+gss1_h = subset(gss1, happy == "Very happy" | happy == "Pretty happy" | happy == "Not too happy")
+# Then we make the subset of the above dataframe and keep only the 4 labels of job satisfaction. This process is followed for all other variables as well.
+gss1_hsj = subset(gss1_h, satjob == "Very satisfied" | satjob == "Moderately satisfied" | satjob == "A little dissatisfied" | satjob == "Very dissatisfied")
+gss1_hsjc = subset(gss1_hsj, class_ == "Lower class" | class_ == "Working class" | class_ == "Middle class" | class_ == "Upper class")
+gss1_hsjcsf = subset(gss1_hsjc, satfin == "Pretty well satisfied" | satfin == "More or less satisfied" | satfin == "Not satisfied at all")
+# We ultimately have the final dataframe that consists of the labels that are valid for us. We originally had 68846 rows but after cleaning we are left with 47251 rows. 
+```
+
+
+## Introduction
+
+  There is still contention over whether money and success are the key to real happiness. Americans are often forced to sacrifice their happiness due to a culture that puts immense focus on establishing a successful career and working towards financial freedom. Furthermore, studies have shown the potential effects social class has on individual’s thoughts, feelings, and behaviors (Manstead, 2018). In relation, individuals of different social classes may have varying life experiences that can influence their financial and job satisfaction as well as their general happiness. We used data from the General Social Survey in order to investigate this relationship between job satisfaction, financial satisfaction, and happiness among various social classes. We go into more detail below regarding information about the General Social Survey and its data. 
+  
+  The General Social Survey (GSS) is a nationally representative survey of American adults conducted annually since 1972 and every other year since 1994. The GSS collects data to monitor and explain shifts in views, beliefs, and actions within American society. The GSS adapted questions from previous surveys, enabling researchers to examine and evaluate patterns spanning 80 years.The GSS includes a regular core of demographic, social, and opinion questions, as well as topics of special interest. National spending priorities, mental health, violence and crime, civil liberties, inter-group acceptance, ethics, social inclusion, and stress and traumatic events are some of the topics covered. The GSS is one of the most significant data sources for sociological and behavioral trends of the United States. It enables researchers to investigate the organization and functioning of society as a whole as well as the responsibilities of significant subgroups and to compare the United States to other countries. The GSS strives to make high-quality data available to researchers, students, policymakers, and others at a low cost and with little difficulty in relation to accessing the data. The GSS has performed intensive methodological research to develop survey procedures and assure the highest possible quality of GSS data.
+ 
+  The General Social Survey is a key component of the National Data Program for the Social Sciences (NDPSS). The NDPSS is a National Science Foundation-funded social indicator, infrastructure, and data distribution program. This program has three primary functions:
+  
+1. Collect data to track and explain trends, changes, and constants in attitudes, behaviors, and qualities, as well as to investigate the structure, development, and functioning of society and the roles of various subgroups.
+
+2. Compare the United States to other nations in order to put American culture into context and construct cross-national human society models society.
+
+3. Make current, practical, high-quality data available to academics, students, policymakers, and others at minimal cost and with minimal delay. NDPSS data are collected through the General Social Survey (GSS) and its allied surveys in the International Social Survey Program (ISSP).
+ 
+  NORC at the University of Chicago performs reliable research and analysis. It is a neutral research organization that has been at the forefront of measuring and comprehending the planet. For almost eight decades, they have researched practically every aspect of the human experience as well as every significant news event. Today, NORC collaborates with government, commercial, and nonprofit customers all around the world to offer the neutrality and knowledge required to impact society's key choices. NORC does research in the following areas: economics, markets, workforce, education, training, income, expansion of businesses, health, well-being, society, media, and public affairs. They approach all tasks with strong technical competence, a collaborative attitude, and a dedication to scientific integrity. 
+  
+
+  According to the The Nonpartisan and Objective Research Organization (NORC), data from the General Social Survey was originally gathered via face-to-face or telephone interviews up until 2002 when a computer-assisted personal interviewing program was implemented as another method of surveying. Each year the survey is conducted, the researchers use two target samples aiming for a size of about 1500 individuals.The sample consists of voluntary participants selected from various geographic areas in the United States.  Interviews last about 90 minutes and typically one adult per household is interviewed. The General Social Survey is a cross-sectional study but started using panel data starting in 2006, 2008, and 2010. However, the panel data was not used in this exploratory analysis. The survey consists of a set of core questions that are used every year the study is conducted. These core questions usually involve information about demographic, socioeconomic, political, and social well-being while other sets of questions are introduced based on current social issues in the United States depending on the interview year. It is important to note that not all questions are asked of each respondent because some questions are situation based and may not be applicable to all participants. For example, the question “Would you say that your marriage is very happy, pretty happy, or not too happy?”  is only applicable to married respondents and would not be included during unmarried participants’ interviews. The specific information used for our exploratory data analysis was retrieved using the GSS Data Explorer function which allowed us to search for specific variables during specific years and group them together in order to download into a csv file and manipulate in RStudio. 
+  
+  When assessing the data and applying weights, certain restrictions regarding the GSS sample must be considered. The most fundamental limitation is the small sample size and the fact that it is used for a cross-sectional survey of the US population. Another case is the oversampling of black respondents during the years of 1982 and 1987. To amend the results, one can exclude a few of these responses or statistically weigh the data using specialized weights. Also, because only one adult is interviewed per household, those with big families have a decreased likelihood of being chosen. For individual data, statistical weighting values based on the number of adults in the household can help in compensation. Problems with the survey instrument could cause participants to answer questions in an unpredictable way with some potential response bias. Some people's interpretations of the word "discuss" may well have shifted over time. In addition to the considerations that must be taken while assessing the data, data quality concerns such as non- response bias might affect the survey's representativeness. There are gaps in the years. The GSS was first administered in 1972 and was held practically every year until 1994. Since 1994, the GSS has been conducted in even-numbered years. Due to funding limitations, there were no interviews held in 1979, 1981, or 1992. It is important to note that there are quite a few missing responses within each year of the dataset. Variables like AGE include real values (18-89); however, there are also codes like 0,98, and 99 that indicate "missing data". One needs to make certain that missing codes are not considered as true ages. It is crucial to remember that the GSS is a small sample size survey; consequently, there may not be enough respondents in the GSS to analyze some small minority groups. The GSS can tell us how many US adults were divorced at the time of the GSS poll in 1980, but we don't know when those people divorced, so we can't deduce anything about the yearly divorce rate or even the lifetime divorce rate (because people can move back and forth between the divorced and married statuses). These are some potential limitations that we took into consideration when conducting our exploratory research. 
+
+  
+  
+
+### Prior Research  
+  
+  The General Social Survey dataset is a longstanding, notable dataset that has been used in various ways for many analyses involving the complexity of American society and its functioning. In addition, a plethora of other studies have been conducted in reference to job satisfaction, financial satisfaction, and happiness across social class which provided crucial foundational information for the development of our SMART question “How do individuals’ level of satisfaction with their job and financial situation related to their general level of happiness across the USA from 1972 to 2021?”  For example, the nonpartisan and objective research organization (NORC) at the University of Chicago, who created the General Social Survey dataset, published a summary report in 2015 called the “Trends in Psychological Well-Being 1972 - 2014”.  The article used various variables regarding overall satisfaction in marriage, life, finances, and work as well as variables about general and specific areas of happiness.  The study provided descriptive trends of each variable over a forty-two year period and helped us to develop a general understanding of how each satisfaction and happiness variable changed overtime. More specifically, we were surprised by the significant changes in work satisfaction and financial satisfaction over the years. As a result, our SMART question and subsequent exploratory analysis focused on work and financial satisfaction in relation to one another overtime in hopes of uncovering an even bigger pattern between the two variables. 
+  
+ The Pew Research Center (2016) conducted pivotal research regarding the way in which Americans view their jobs and other related social trends. Their main finding showed that a majority of Americans’ were generally satisfied with their current job as a whole but that job satisfaction significantly differed across socioeconomic statuses as well as across occupations. More specifically, they found that 59% of those with an income of \$75,000 or more claimed to be very satisfied with their job situation while the percent of individuals who were very satisfied with their job incrementally decreased as salaries decreased from $75,000 dollars. They discovered a similar trend when they asked individuals about their financial satisfaction. Kessler & Gutworth (2022) conducted a similar research study focused on levels of work exhaustion and financial satisfaction of working class individuals in comparison to middle and upper class individuals with information from the General Social Survey dataset. The findings showed that working class individuals were less financially satisfied and more work exhausted than middle and upper class individuals. The study also revealed that the financial satisfaction of working class individuals in 1972 was not much different from their levels of  financial satisfaction in 2018.
+ 
+ Not only did the findings of these studies reveal a potential relationship between job satisfaction and financial satisfaction, but also brought to mind the importance of socioeconomic status to individuals’ level of satisfaction. These two analyses helped in our question development by showing the effect socioeconomic status had on work satisfaction and financial satisfaction respectively. It made us think about the various ways in which socioeconomic status could shape individuals' perspectives, well-being, and overall life experiences and thus, influencing their sense of financial and job satisfaction throughout life.
+ 
+ The Pew Research Center study also revealed that the way Americans feel about their job also influences other aspects of their life including their general sense of happiness. The analysis found the largest differences in happiness between individuals with high and low annual incomes. The research helped us to understand that a job and its earnings are a major part of one’s life and consequently may act as a main provider of happiness or lack thereof for individuals. Another important analysis for our question development looked at Americans’  financial satisfaction, job satisfaction, and happiness in the context of working from home during the COVID-19 pandemic (Mullen, 2020). The research showed that financial satisfaction was at an all time high, happiness was at an extreme low, and that individuals enjoyed their jobs more when they were working from home. This specific analysis encouraged our question development by helping us to understand the potential effects that the pandemic could have on our findings.  Though the study focused more on how happiness, financial satisfaction, and job satisfaction changed as a result of the pandemic, it made us think of how work satisfaction and financial satisfaction can act as emotional currency that sustain individuals’ happiness throughout life.
+ 
+
+### Exploratory Data Analysis 
+
+  In statistics, Exploratory Data Analysis (EDA) is an approach to analyze datasets in order to summarize their primary features through visual methods. Exploratory data analysis encourages statisticians  to investigate information and develop theories that would lead to new trends and findings. EDA helps us to make sense of our data. EDA is about interpreting information, and it is crucial to get insights about that information before you begin modeling it which we attempt to do in this analysis.
+  
+  As reported above, our report focuses on the general happiness of a individual in relation to their work satisfaction and financial satisfaction from 1972 to 2021 using a total of 47,251 observations. In order to measure job satisfaction, we used the statement *"On the whole, how satisfied are you with the work you do..?"* with responses ranging from *"very satisfied, moderately satisfied, a little dissatisfied, or very dissatisfied"*. Similarly, financial satisfaction was measured using the question *"So far as you and your family are concerned, would you say that you are pretty well satisfied with your present financial situation, more or less satisfied, or not satisfied at all?"* Our third variable "general happiness" was measured by asking *"Taken all together, how would you say things are these days--would you say that you are very happy, pretty happy, or not too happy?"*
+  
+  More specifically, we hoped to uncover any potential relationships between an individuals' social class and their job satisfaction, financial satisfaction, and general happiness. Social class was measured by asking *"If you were asked to use one of four names for your social class, which would you say you belong in?"* with four responses including *"the lower class, the working class, the middle class, or the upper class"*.  
+
+ Our exploratory data analysis investigated the relationship between job satisfaction, financial satisfaction, and happiness across social class. We perform initial tests including frequency charts, chi-squared tests of independence, and time series analysis to get a sense of the data and how the relationship between these variables would support our question "How do individuals’ level of satisfaction with their job and financial situation relate to their general level of happiness across the USA from 1972 to 2021?"
+
+## Descriptive Statistics
+
+### Pie Charts
+```{r}
+par(mfrow=c(1,4)) 
+# Piechart for showing different percentages of level of happiness in the dataset
+pie_happy <- gss1_hsjcsf %>% count(happy) %>%
+             arrange(desc(happy)) %>% 
+             mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages) # ypos is calculated because it gives us the center of the angle thus helping us to place the % right in the middle of the slice.
+# Piechart for showing different percentages of social class in the dataset
+pie_class <- gss1_hsjcsf %>% count(class_) %>%
+             arrange(desc(class_)) %>% 
+             mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages)
+# Piechart for showing different percentages level of financial satisfaction in the dataset
+pie_satfin <- gss1_hsjcsf %>% count(satfin) %>%
+              arrange(desc(satfin)) %>% 
+              mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages)
+# Piechart for showing different percentages of job satisfaction in the dataset
+pie_satjob <- gss1_hsjcsf %>% count(satjob) %>%
+              arrange(desc(satjob)) %>% 
+              mutate(percentages = n/sum(n) * 100, ypos = cumsum(percentages) - 0.5 * percentages)
+plot1 <- ggplot(pie_happy, aes(x = "", y=percentages, fill = happy)) +
+         geom_bar(stat="identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Happiness Variable", fill = "Happiness") +  
+         theme(plot.title = element_text(face = "bold", hjust = 0.5))
+plot2 <- ggplot(pie_class, aes(x = "", y = percentages, fill = class_)) +
+         geom_bar(stat = "identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Social Class Variable", fill = "Class") + 
+         theme(plot.title = element_text(face = "bold", hjust = 0.5))
+plot3 <- ggplot(pie_satfin, aes(x = "", y = percentages, fill = satfin)) +
+         geom_bar(stat = "identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Financial Satisfaction Variable", fill = "Financial Satisfaction") + 
+         theme(plot.title = element_text(face = "bold", hjust = 0.2))
+plot4 <- ggplot(pie_satjob, aes(x = "", y = percentages, fill = satjob)) +
+         geom_bar(stat = "identity", width = 1) + 
+         coord_polar("y", start = 0) +
+         geom_text(aes(x = "", y = ypos, label = scales::percent(percentages, scale = 1))) +
+         scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+         labs(title = "Job Satisfaction Variable", fill = "Job Satisfaction") + 
+         theme(plot.title = element_text(face = "bold", hjust = 0.5))
+plot_grid(plot1, plot2, plot3, plot4, align = "h", axis = "b", rel_widths = c(20, 20))
+# We use the plot_grid function to plot the 4 pie charts in a 2x2 grid
+```
+
+The first pie chart shows that more than half of the people are pretty happy (57%) whereas the individuals who report being very happy and not too happy make up 31% and 12% of the sample respectively.
+
+The second  pie chart shows the makeup by different social classes for the sample. It shows that nearly half of the people fall under the working class (49.1%) and about 43% of the sample consider themselves to be middle class. Lower class individuals make up about 5% of the sample while upper class individuals make up about 3% of the sample. 
+ 
+The third pie chart shows that nearly half of the people are more or less satisfied with their financial situation (~46%) whereas about 27% of people are pretty well satisfied and 27% are not satisfied at all with their financial situation.
+
+The last pie chart shows about 48% of the sample are very satisfied with their job whereas 4.1% of people are dissatisfied with their job. The percentage of people who are a little dissatisfied and moderately satisfied are 10% and 38.2% respectively.
+
+## Chi Squared Analysis
+```{r}
+# with sjPlot we can plot a simple Chi-Squared distribution that indicate at what p-level is.
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col = gss1_hsjcsf$satfin, title = "Level of Happiness by Financial Satisfaction Crosstabulation", var.labels = c("Happiness Level", "Financial Satisfaction"), show.row.prc = TRUE, emph.total = TRUE)
+```
+
+The cross tabulation above shows the frequency of happiness levels by financial satisfaction. We wanted to further examine the relationship between financial satisfaction and happiness in order to see how feelings of financial satisfaction can potentially influence how happy an individual feels in life.  According to the chi-squared test of independence, there is a significant relationship between happiness and financial satisfaction (p<0.05). This means that an individual's level of happiness depends on their feelings of satisfaction with their current financial situation. More specifically, the table shows that a majority of individuals (54.5%) that report being not at all satisfied with their financial situation were not too happy in life. In addition, almost 49% of people that reported being more or less satisfied with their financial situation were pretty happy with their life while about 42% of individuals that were pretty well satisfied with their financial situation reported being very happy in life. The results clearly imply that the more financially satisfied an individual is, the happier they are in life. 
+
+```{r fig.height = 8, fig.width = 13}
+sjPlot::tab_xtab(var.row = gss1_hsjcsf$happy, var.col = gss1_hsjcsf$satjob, title = "Level of Happiness by Job Satisfaction Crosstabulation", var.labels = c("Happiness Level","Job Satisfaction"), show.row.prc = TRUE, emph.total = TRUE)
+```
+
+The cross tabulation above shows the frequency of happiness levels by job satisfaction. We wanted to further examine the relationship between job satisfaction and happiness in order to see how job satisfaction can potentially influence how happy an individual feels in life. According to the chi-squared test of independence, there is a significant relationship between job satisfaction and happiness (p<0.05). This means that an individual's level of happiness depends on their satisfaction with their current job. The table shows that a majority of individuals that reported being very dissatisfied (12.2%) or a little dissatisfied (19.8%) with their jobs were not too happy in their lives. About 44% of people that were moderately satisfied with their jobs reported being pretty happy in life while 65.9% of people who were very satisfied with their jobs reported being very happy in life. Considering that individuals who reported being more dissatisfied with job also reported being unhappy and those who reported being more satisfied were more happy shows  that job satisfaction may play a crucial role in how happy individuals are in life. 
+
+## Graphical Representation of the Data
+
+### Financial Satisfaction and Happiness by Social Class
+```{r fig.height = 7, fig.width = 12}
+# Making plot of relationship between class and financial satisfaction
+ggplot(gss1_hsjcsf, aes(x = satfin, fill = happy)) +
+       geom_bar(position = "dodge") +
+       facet_wrap(~class_)  +
+       labs(title = "Relationship Between Financial Satisfaction and Happiness Levels by Social Class", x = "Financial Satisfaction", y = "Frequency", fill = "Happiness") +
+       theme_bw(base_size = 14) + 
+       theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
+       scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+       scale_x_discrete(limits = c("Not satisfied at all", "More or less satisfied", "Pretty well satisfied"))
+```
+
+This figure illustrates the relationship between individuals' financial satisfaction and general happiness by social class. For context, there is also a disproportionate number of individuals in the middle and working class groups in comparison to the lower and upper class individuals. For lower, working, and middle class groups, a majority of individuals were more or less satisfied with their financial situation and reported feeling pretty happy in their life. It is important to note that there is a similar trend in the middle class group for both job satisfaction and financial satisfaction in relation to happiness. Middle class individuals that are highly satisfied with their job or financial situation were equally high in both the pretty happy and very happy responses.For upper class individuals, a large number were pretty well satisfied with their financial situation and reported being very happy in life. As we can see, the results show that the higher the social class the more you become satisfied with your financial situation and the more you report being very happy while the more you go down in class, the more your satisfaction and happiness become average (as in more or less satisfied and pretty happy).
+
+### Job Satisfaction and Happiness by Social Class
+```{r fig.height = 7, fig.width = 12}
+# making plot of relationship between class and job satisfaction
+ggplot(gss1_hsjcsf, aes(x = satjob, fill = happy)) +
+       geom_bar(position = "dodge") +
+       facet_wrap(~class_)  +
+       labs(title = "Relationship Between Job Satisfaction and Happiness Levels by Social Class", x = "Job Satisfaction", y = "Frequency", fill = "Happiness") +
+       theme_bw(base_size = 14) + 
+       theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
+       scale_fill_manual(values = c("#0290d1", "#e88738", "#39db7f", "#7f2bed")) + 
+       scale_x_discrete(limits = c("Very dissatisfied", "A little dissatisfied", "Moderately satisfied","Very satisfied"))
+```
+
+The figure above looks at the relationship between individuals' job satisfaction and general happiness by social class. For context, there is a larger number of working and middle class individuals than upper and lower class individuals. The results show that many lower class individuals were very satisfied with their job and that those same individuals were pretty happy overall. A majority of working class individuals were also very satisfied with their job and were also pretty happy. Interestingly, many middle class individuals were very satisfied with their jobs and reported being equally pretty happy and very happy in their lives. The upper class individuals were the only group that had more very happy individuals with very high job satisfaction. In other words, most individuals within the four social class groups were very satisfied with their jobs but only upper class individuals had more very happy individuals compared to pretty happy individuals. These results provide some insight into how social class may have a greater influence on individual's feelings of financial satisfaction and thus also influencing their feelings of happiness in life.  
+
+
+## Time-Series Analysis
+
+### Happiness and Job Satisfaction Over Time
+
+We created one subset of the dataframe by adding a column of percentage value of every possible combination of happiness, year, and job satisfaction. Similarly, we created another subset that showed the percentage value of every possible combination of happiness, year, and financial satisfaction.
+
+
+```{r fig.height = 7, fig.width = 10}
+# Calculations prior to plotting happiness levels compared to the job satisfaction from 1972 - 2018.
+gss_satjob <- gss1_hsjcsf %>% 
+              group_by(year, happy, satjob) %>% 
+              summarise(total_count=n(), .groups = 'drop') %>% 
+              as.data.frame()
+gss_satjob_perc <- transform(gss_satjob,
+                             perc = ave(total_count,
+                                        year,
+                                        FUN = prop.table))
+gss_satjob_perc$perc = gss_satjob_perc$perc * 100
+# Plot to analyze happiness levels compared to the job satisfaction from 1972 - 2018.
+ggplotly(gss_satjob_perc %>%
+           ggplot( aes(x = year, y = perc)) +
+           geom_line(aes(colour=happy)) +
+           geom_point(size = 0.5) +
+           xlab("Years") +
+           ylab("Percentage Happiness") +
+           labs(title = "Job Satisfaction Levels") +
+           theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+           facet_wrap(. ~ satjob, nrow = 4) +
+           guides(color = guide_legend(title = "Happiness Type")) +
+           transition_reveal(year) +
+           scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f")))
+
+gif1 <- gss_satjob_perc %>%
+        ggplot(aes(x = year, y = perc)) +
+        geom_line(aes(colour = happy)) +
+        geom_point(size = 0.5) +
+        xlab("Years") +
+        ylab("Percentage Happiness") +
+        labs(title = "Job Satisfaction Levels") +
+        theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+        facet_wrap(. ~ satjob, nrow = 4) +
+        guides(color = guide_legend(title = "Happiness Type"))+
+        transition_reveal(year) +
+        scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f"))
+
+# We use the animate function to make an animation that shows differences over the years from 1972 - 2018
+#animate(gif1, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
+# We save the animation into a gif.
+#anim_save("gif1.gif")
+```
+
+The graph tells us a story of how job satisfaction relates to the level of happiness, over time, of the surveyed individuals, with time being on the x-axis, the percentage of happiness on the y-axis (with its subcategory description in the legends that are right aligned), and the job satisfaction in a matrix of panels where each panel represents one subcategory of job satisfaction. It is visible that a little amount of discomfort is imminent in human lives, which is exactly what the data tells us when we see that there is a small group of people who are a little dissatisfied with their job and they seem to have a moderate happiness level too. This moderate happiness value hits its peak in 1980, 1984, 1987, and 1993 but never crosses the 10 percent happiness mark.
+
+When it comes to being moderately satisfied by the job, we can see that this is directly proportional to being pretty or moderately happy in life. We see the pretty-happy value fluctuating between 1982 and 1984 after regaining its position in 1985. The moderately happy value maximizes in the year 2000, while the not too happy and very happy values stay close to 10 percent and below for the complete timeline. Another thing that stands out in this part of the graph is how the not-too-happy and very happy values interchange their positioning with the onset of 2020 and go on to stay that way even in 2021 because of two major reasons: 1. crippling inflation; and 2. the COVID-19 pandemic. We additionally went on the internet and managed to get a frame of data from the United States Bureau of Labor Statistics (visually represented by Statista in their YouTube video) for the year 2000. We can say that we see a sudden upward movement from 1998 to 2000 for the percentage value of pretty happy and very happy people, which is exactly where the professional and business services industry took off because of feature-rich computers that had been commercialized, which naturally meant a decline in the not-so-happy percentage in the same time frame. This is important in proving the validity of the data because moderately satisfied people are usually the ones who are earning just enough to not suffer but not enough to call themselves rich. The sectoral shift from the manufacturing-heavy job sector to the professional and business services sector meant more job opportunities for people who were moderately satisfied with their jobs.
+ 
+It is also evident that the people who are very dissatisfied with their jobs tend to have very low levels of happiness. The percentage value of happiness for people who are very dissatisfied with their jobs never even crosses the 5 percent mark from 1972 to 2021.
+
+For the people who are very satisfied with their jobs, the percentage happiness number is relatively high for moderately happy and/or very happy people. The very happy value crosses the moderately happy value on the graph on 4 occasions: 1974, 1984, 1988, and 1990. It goes on to decrease after 1990 with a major movement post-2018 until 2021 due to the same 2 reasons that have affected everyone across all categories of job satisfaction amongst people, and that is the COVID-19 pandemic and inflation. We see a symmetry in the not-very-happy percentage going up while both the happiness percentage values are coming down amongst the people who were very satisfied with their job. It is because the country came to a stop due to a lockdown to prevent the disease from spreading, which caused the loss of jobs even for people who were very satisfied with it, causing a loss in happiness.
+
+
+### Happiness and Financial Satisfaction Over Time
+
+```{r fig.height = 7, fig.width = 10}
+# Calculations prior to plotting happiness levels compared to the financial satisfaction from 1972 - 2018.
+gss_satfin <- gss1_hsjcsf %>% 
+              group_by(year, happy, satfin) %>% 
+              summarise(total_count=n(), .groups = 'drop') %>% 
+              as.data.frame()
+gss_satfin_perc <- transform(gss_satfin,
+                             perc = ave(total_count,
+                                        year,
+                                        FUN = prop.table))
+gss_satfin_perc$perc = gss_satfin_perc$perc * 100
+# Plot to analyze happiness levels compared to the financial satisfaction from 1972 - 2018.
+ggplotly(gss_satfin_perc %>%
+           ggplot( aes(x = year, y = perc)) +
+           geom_line(aes(colour = happy)) +
+           geom_point(size = 0.5) +
+           facet_wrap(. ~ satfin, nrow = 3) +
+           xlab("Years") +
+           ylab("Percentage Happiness ") +
+           labs(title="Financial Satisfaction Levels ") +
+           theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+           facet_wrap(. ~ satfin, nrow = 3) +
+           guides(color = guide_legend(title = "Happiness Type")) +
+           transition_reveal(year) +
+           scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f")))
+# We save the plot into a variable gif to make an animation.
+gif2 <- gss_satfin_perc %>%
+        ggplot(aes(x = year, y = perc)) +
+        geom_line(aes(colour = happy)) +
+        geom_point(size = 0.5) +
+        facet_wrap(. ~ satfin, nrow = 3) +
+        xlab("Years") +
+        ylab("Percentage Happiness") +
+        labs(title = "Financial Satisfaction Levels") +
+        theme(plot.title = element_text(hjust = 0.5, size = 10)) +
+        facet_wrap(. ~ satfin, nrow = 3) +
+        guides(color = guide_legend(title = "Happiness Type")) +
+        transition_reveal(year) +
+        scale_color_manual(values = c("#0290d1", "#e88738", "#39db7f"))
+ 
+# We use the animate function to make an animation that shows differences over the years from 1972 - 2018
+#animate(gif2, renderer = gifski_renderer(), fps = 60, height = 690, width =1000, duration = 3)
+# We save the animation into a gif.
+#anim_save("gif2.gif")
+```
+
+This plot illustrates the relationship between financial satisfaction and level of happiness over time for the surveyed individuals, with time on the x-axis, percentage happiness on the y-axis (with its subcategory description in the legends that are right aligned), and financial satisfaction in a matrix of panels where each panel represents one subcategory of financial satisfaction. It is visible that when we stack up a big picture metric of financial satisfaction against job satisfaction and we look at people who are more or less satisfied with their financial status, we find that there are a significant percentage of people who are moderately happy and even very happy, which is directly proportional to them being partially satisfied, with the not too happy percentage being on the low side. The pretty-happy values hit major bottoms twice, in 1974 and 2008, and major peaks in 1987, 1991, and 1994, while fluctuating otherwise. After COVID-19 in 2020 and the additively negative effects of inflation, the not-too-happy value suddenly goes up, bringing down the very-happy percentage equally dramatically with it. Also, we see that in this category, the moderately happy percentage value goes up, discarding the general trend from 2018 to 2021 in this category, which can be backed up by the fact that these people are generally in the middle class or small business category, and COVID-19 gave them a huge opportunity to be profitable from their small or local businesses while all the big firms were shut down.
+
+When we move on to people not satisfied at all, we see that the happiness percentage never broke the 20 percent barrier and stays below that even after a gradual rise from 11.95 percent in 1972 and topping three times in 1983, 1993, and 2010, respectively. The very happy number, as expected, stays at the lowest of the lows for people that are not at all financially satisfied, and the not-happy percentage very slowly goes up with the rise in inflation over all these years with a steep upward movement, and this value represents the people already having financial problems, which rose after COVID-19. This is justified by the very happy number going further down along with the moderately happy number going down.
+
+If we move on to the last part of our graph, we find both happiness values higher than the "not too happy" value, which makes sense considering the group we are highlighting right now is pretty well satisfied. We see pretty happy percentage values surpassing very happy values eighteen times from 1975 to 2021, in the following years: 1975, 1978, 1980, 1982, 1985, 1987, 1989, 1994, 1996, 1998, 2000, 2002, 2006, 2008, 2010, 2012, 2016, and 2021. The moderately happy percentage value goes up yet again, discarding the general trend from 2018 to 2021, with very similar reasoning that these numbers are being contributed by people owning small businesses. As the inflation rate went up with time, we saw a slow and steady rise in the unhappiness percentage with a steeper climb from 2018 to 2020, which effectively caused a sharp fall for the very happy value, even for the pretty well satisfied group of people, which can be justified by the combined negative effect of inflation and COVID-19 affecting jobs and businesses alike.
+
+
+## Conclusion
+
+  After thousands of years of evolving human civilization, the human race has encountered numerous problems, and each problem has given rise to a question or a problem statement that we have been able to solve time and again thanks to our knowledge and the capacity of our human minds. Now, with the evolution of technology since its dawn, we have been able to develop ways to solve your problem using the artificial brains known as computers. We use emotions, data, and cerebral prowess to process the information and try to find a solution for the same, but computers cannot process emotion reliably yet, so they are heavily reliant on data to give the best possible results, properly analyze everything, and generate insights that are serving the greater good of humanity. To look for our data, we need a problem statement or a question that can help guide us in the process of data searching, and that question should be comprehensive enough to answer a certain problem or solve a problem. In our case, we started off with a motive to find an answer about "The Relationship between Financial Satisfaction, Job Satisfaction, and Happiness for Different Social Classes." We backed up our question with thorough research before coming up with it and looked for the data in parallel to find a meaningful answer. Due to this, we found ourselves in a situation where we were able to wrangle the data to its best capacity without having to change the S.M.A.RT. question. We took a very unbiased approach to our exploratory data analysis (EDA) by displaying the raw yet cleaned data on the statistical tests, graphs, and plots, as evidenced by our plots and discussions surrounding them in this RMD file and presentation. Since we did not manipulate the data, we were able to see the most real results that the data showed us, which showed a positive correlation between happiness and job satisfaction, financial satisfaction, and even social class. The data was able to prove that with increasing social class, financial stability, and earnings from a job, the happiness of an individual also rises, and since we were looking to find a relation between all the factors and happiness, we were successfully able to do so while sustaining our original question.
+
+
+  Though our categorical data proved to be strong for our exploratory data analysis, it may have also been beneficial to have a numeric variable included in order to gather a more concrete and in depth understanding of our variables. For example, if we had an income variable that included ordinal ranges of incomes, it would’ve allowed us to get a more definite conceptualization of individuals' social statuses as opposed to just asking for someone to list what social class they are a part of. A main issue that arose with our social class variable involved a disproportionate number of individuals responding as part of the working or middle class. Considering the question only asked about the four overarching social classes, there may have been some response bias in terms of how individuals define each social class in addition to how they personally view their social status.  A numeric indicator of socioeconomic status, such as income, would’ve allowed us to not only infer individuals’ social class in a more concrete way but also explore our financial satisfaction variable to an even greater extent. For example, our EDA would have been able to look at whether an individual was making above or below the national average and if satisfaction would increase as income increased. It would have been interesting to incorporate variables such as cost of living, number of family members, and other factors to further understand income and financial satisfaction. Other additional information that would be beneficial to our exploratory data analysis would be information about demographic variables such as gender and race. It is a widely known phenomenon that women and people of color are systematically disadvantaged when it comes to employment, career advancement, and equal wages. By exploring gender and race in our analysis, we may have been able to uncover potential trends involving job and financial satisfaction and happiness across these different groups and have a better understanding of why we found certain relationships among these variables.
+
+  The beginning of our EDA was the point where we started looking at the pie charts, which divulged basic information in a more understandable format. This is where we got to know about individual features of our data, which were financial satisfaction, job satisfaction, happiness, and social classes. We realized the percentage amount of each of these features in our data, which helped draw a superficial inference about the categories of people before we analyzed the variables together. Then we performed a chi-squared test, which allowed us to define independence between two categorical variables, and the lower p values that we obtained in our tests for both chi-squared analysis of job and financial satisfaction showed extremely low values, proving that there is a high direct proportionality between happiness and (financial, job satisfaction). This was the point in our project where we were starting to formulate an answer to our S.M.A.R.T. question. We further did some more plotting of graphs and time series analysis (as our data is spread over time) to test our hypothesis that we had built until this point. We also managed to successfully diversify our result set by factoring social classes into the analysis, covering yet another element of our question. The social class analysis told us that there are more people willing to respond to a survey in the middle and working classes than in the lower and upper classes. It also got us to think about things from the standpoint of social class, with higher-class people showing relatively high numbers for a very happy value, and it went down as we moved further down the class, which made us more and more confident about a direct relationship between increasing (financial, job satisfaction) and increasing happiness. To solidify our theory, we did a time series analysis on the 47251 rows of data that is spread over 50 years of time from 1972 to 2021 and found a similar relationship to what we saw above, confirming our theory, which essentially has sketched out the answer to our question after the exploratory data analysis: happiness is directly related to an individual’s financial and job satisfaction and social class, with happiness being directly proportional to all of them.
+
+
+  Overall, our initial findings lead us to believe that happiness is related to job and financial satisfaction. The more financially satisfied you are, the happier you are. In addition, the more satisfied you are with your job, the happier you are. One might believe that money can not buy you happiness, but the data points out that money, along with a fulfilling job and financial freedom, has the potential to provide happiness. Job fulfillment and financial security can make our life easier and more comfortable. It allows us to fulfill our needs and wants.  In the future, we can also observe a similar relationship between job and financial satisfaction with the stress levels of individuals. It will be interesting to find connections with other similar variables. In the future, after gathering more data, we can also observe the short-term and long-term impact on individuals due to covid and how long it took for the numbers to return to pre covid times.
+
+
+
+<center><h2>References</h2></center>
+
+Fotinatos-Ventouratos, R., Cooper, C.L. Social Class Differences and Occupational Stress. International Journal of Stress Management 5, 211–222 (1998). https://doi.org/10.1023/A:1022917812046
+
+Kessler, S. R., & Gutworth, M. B. (2022). The Forgotten Working Class: A Call to Action Based upon a Repeated Cross-Sectional Examination of the Relationships Among Social Class, Financial Satisfaction, and Exhaustion. Group & Organization Management, 0(0). https://doi.org/10.1177/10596011221099797
+
+Manstead A. (2018). The psychology of social class: How socioeconomic status impacts thought, feelings, and behaviour. The British journal of social psychology, 57(2), 267–291. https://doi.org/10.1111/bjso.12251
+
+Mullen, C. (2020, June 18). Happiness is at decades-low, financial satisfaction at all-time high [Review of Happiness is at decades-low, financial satisfaction at all-time high]. The Business Journals.https://www.bizjournals.com/bizwomen/news/latest-news/2020/06/happiness-is-at-decades-low-financial-satisfacti.html?page=all
+
+Pew Research Center (2016, October 6). The State of American Jobs. Pew Research Center’s Social & Demographic Trends Project. https://www.pewresearch.org/social-trends/2016/10/06/the-state-of-american-jobs/
+
+Smith, T. W., Davern, M., Freese, J., and Morgan, S.L., (1972-2021). General social survey, 1972-2018 [machine-readable data file] Chicago, IL: National Opinion Research Center [producer].  Ann Arbor, MI: Inter-university Consortium for Political and Social Research [distributor]. doi: 10.3886/ICPSR31521.v1
+
